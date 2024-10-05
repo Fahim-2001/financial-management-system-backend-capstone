@@ -7,6 +7,7 @@ require("dotenv").config();
 require("colors");
 const PORT = process.env.PORT || 8000;
 
+// CORS Options - Defines the allowed to origin to accept requests.
 var corsOptions = {
     origin: "*",
     allowedHeaders: [
