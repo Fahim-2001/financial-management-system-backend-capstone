@@ -28,6 +28,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use(express.static("public"));
 
+// ROOT ROUTE
 app.get("/", async (req, res) => {
     res.status(200).json({
         message: "Welcome to The Valor's Financial Management System Backend Service.",
