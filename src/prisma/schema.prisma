@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Prisma Schema for Individual Users
+model IndividualUser {
+  id                Int      @id @default(autoincrement())
+  first_name        String   @db.VarChar(255)
+  last_name         String?  @db.VarChar(255)
+  email             String   @unique @db.VarChar(255)
+  phone_number      String   @db.VarChar(255)
+  hashed_password   String   @db.VarChar(255)
+  membership        String   @db.VarChar(255)
+  purchased_service Int?
+  // Relations
+  service           Service? @relation(fields: [purchased_service], references: [id])
+}
+
+// Prisma Schema for Organizational Users
+model OrganizationalUser {
+  id                Int          @id @default(autoincrement())
+  org_uid           String       @db.VarChar(255)
+  org_name          String       @db.VarChar(255)
+  first_name        String       @db.VarChar(255)
+  last_name         String?      @db.VarChar(255)
+  email             String       @unique @db.VarChar(255)
+  hashed_password   String       @db.VarChar(255)
+  role              String       @db.VarChar(255)
+  membership_type   String       @db.VarChar(255)
+  purchased_service Int?
+  // Relations
+  organization      Organization @relation(fields: [org_uid], references: [org_uid])
+  service           Service?     @relation(fields: [purchased_service], references: [id])
+}
+
+// Prisma Schema for Organizations
+model Organization {
+  id           Int                  @id @default(autoincrement())
+  org_uid      String               @unique
+  email        String               @unique
+  phone_number String
+  address      String
+  name         String
+  // Relations
+  users        OrganizationalUser[]
+}
+
+// Prisma Schema for Services
+model Service {
+  id                  Int                  @id @default(autoincrement())
+  name                String
+  price               Int
+  facilities          Json
+  // Relations
+  individualUsers     IndividualUser[]
+  organizationalUsers OrganizationalUser[]
+}
