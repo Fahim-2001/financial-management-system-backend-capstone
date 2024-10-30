@@ -1,12 +1,18 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 const { generateTimestamp } = require("../../utils/generativeFunctions");
+const {
+    findSmallestAvailableId,
+} = require("../../utils/findSmallestAvailableId");
 const prisma = new PrismaClient();
 
-const getAllIndividualUsersFromDB = async () => {
+const getAllUsersFromDB = async () => {
     try {
-        const allIndividualUsers = await prisma.individualUser.findMany();
-        return allIndividualUsers;
+        let allUsers = await prisma.user.findMany({
+            orderBy: { id: "asc" },
+        });
+
+        return allUsers;
     } catch (error) {
         throw new Error(error);
     }
@@ -14,7 +20,7 @@ const getAllIndividualUsersFromDB = async () => {
 
 const getExistingUserFromDbById = async (userId) => {
     try {
-        const existingUser = await prisma.individualUser.findUnique({
+        const existingUser = await prisma.user.findUnique({
             where: { id: userId },
         });
         return existingUser;
@@ -25,7 +31,7 @@ const getExistingUserFromDbById = async (userId) => {
 
 const getExistingUserFromDbByEmail = async (email) => {
     try {
-        const existingUser = await prisma.individualUser.findUnique({
+        const existingUser = await prisma.user.findUnique({
             where: { email: email },
         });
         return existingUser;
@@ -34,35 +40,26 @@ const getExistingUserFromDbByEmail = async (email) => {
     }
 };
 
-const insertIndividualUserIntoDB = async (user) => {
+const insertUserIntoDB = async (user) => {
     try {
-        let {
-            first_name,
-            last_name,
-            email,
-            phone_number,
-            password,
-            created_by,
-        } = user;
+        let { first_name, last_name, email, phone_number, password } = user;
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const joinedAt = generateTimestamp();
 
-        if (!created_by) created_by = "Self-registered";
-
-        const newUser = await prisma.individualUser.create({
+        const missingId = await findSmallestAvailableId("user");
+        const newUser = await prisma.user.create({
             data: {
+                id: missingId,
                 first_name,
                 last_name,
                 email,
                 phone_number,
                 hashed_password: hashedPassword,
-                role: null,
-                membership_type: null,
-                purchased_service: null,
-                org_uid: null,
-                created_at: joinedAt,
-                last_updated_at: joinedAt,
+                profile_picture_url: null,
+                user_type: "general_user",
+                joined_at: joinedAt,
+                updated_at: joinedAt,
             },
         });
 
@@ -72,7 +69,7 @@ const insertIndividualUserIntoDB = async (user) => {
     }
 };
 
-const updateIndividualUserBasicProfileInfoIntoDB = async (userId, user) => {
+const updateUserBasicProfileInfoIntoDB = async (userId, user) => {
     try {
         const { first_name, last_name, email, phone_number } = user;
 
@@ -85,7 +82,7 @@ const updateIndividualUserBasicProfileInfoIntoDB = async (userId, user) => {
                 last_name,
                 email,
                 phone_number,
-                last_updated_at: updatedAt,
+                updated_at: updatedAt,
             },
         });
     } catch (error) {
@@ -93,18 +90,17 @@ const updateIndividualUserBasicProfileInfoIntoDB = async (userId, user) => {
     }
 };
 
-const updateIndividualUserPurchaseInfoIntoDB = async (userId, user) => {
+const updateUserProfilePicIntoDB = async (userId, user) => {
     try {
-        const { membership_type, purchased_service } = user;
+        const { profile_picture_url } = user;
 
         const updatedAt = generateTimestamp();
 
         const updatedUser = await prisma.individualUser.update({
             where: { id: userId },
             data: {
-                membership_type,
-                purchased_service,
-                last_updated_at: updatedAt,
+                profile_picture_url,
+                updated_at: updatedAt,
             },
         });
     } catch (error) {
@@ -112,21 +108,42 @@ const updateIndividualUserPurchaseInfoIntoDB = async (userId, user) => {
     }
 };
 
-const deleteIndividualUserFromDbById = async (userId) => {
+const updateUserPurchaseInfoIntoDB = async (userId, user) => {
     try {
-        const result = await prisma.individualUser.delete({
+        const { user_type, purchased_services } = user;
+
+        const updatedAt = generateTimestamp();
+
+        const updatedUser = await prisma.individualUser.update({
+            where: { id: userId },
+            data: {
+                user_type,
+                purchased_services,
+                updated_at: updatedAt,
+            },
+        });
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+const deleteUserFromDbById = async (userId) => {
+    try {
+        const result = await prisma.user.delete({
             where: { id: userId },
         });
-        console.log(result);
     } catch (error) {
         throw new Error(error);
     }
 };
 
 module.exports = {
-    getAllIndividualUsersFromDB,
+    getAllUsersFromDB,
     getExistingUserFromDbById,
     getExistingUserFromDbByEmail,
-    insertIndividualUserIntoDB,
-    deleteIndividualUserFromDbById,
+    insertUserIntoDB,
+    updateUserBasicProfileInfoIntoDB,
+    updateUserProfilePicIntoDB,
+    updateUserPurchaseInfoIntoDB,
+    deleteUserFromDbById,
 };

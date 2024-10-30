@@ -8,54 +8,44 @@ datasource db {
 }
 
 // Prisma Schema for Individual Users
-model IndividualUser {
-  id                Int           @id @default(autoincrement())
-  first_name        String        @db.VarChar(255)
-  last_name         String?       @db.VarChar(255)
-  email             String        @unique @db.VarChar(255)
-  phone_number      String        @db.VarChar(255)
-  hashed_password   String        @db.VarChar(255)
-  role              String?       @db.VarChar(255)
-  membership_type   String?       @db.VarChar(255)
-  purchased_service Int?
-  org_uid           String?       @db.VarChar(255)
-  created_at        String?       @db.VarChar(255)
-  last_updated_at   String?       @db.VarChar(255)
-  created_by        String?       @db.VarChar(255)
-  // Relations
-  service           Service?      @relation(fields: [purchased_service], references: [id])
-  organization      Organization? @relation(fields: [org_uid], references: [org_uid])
-  roleType          Role?         @relation(fields: [role], references: [role])
+model User {
+  id                  Int       @id @default(autoincrement())
+  first_name          String
+  last_name           String?
+  email               String    @unique
+  phone_number        String
+  hashed_password     String
+  profile_picture_url String?
+  user_type           String?
+  purchased_services  Service[]
+  joined_at           String?
+  updated_at          String?
 }
 
 // Prisma Schema for Organizations
 model Organization {
-  id             Int              @id @default(autoincrement())
-  org_uid        String           @unique @db.VarChar(255)
-  email          String           @unique
-  phone_number   String
-  address        String
+  id             Int     @id @default(autoincrement())
   name           String
-  // Relations
-  IndividualUser IndividualUser[]
+  short_code     String  @unique
+  email          String
+  contact_number String?
+  proof_doc_url  String?
+  address        String
+  created_at     String?
+  updated_at     String?
 }
 
 // Prisma Schema for Services
 model Service {
-  id              Int              @id @default(autoincrement())
-  name            String           @db.VarChar(255)
-  price           Int
-  type            String           @db.VarChar(255)
-  facilities      Json
-  session_type    String           @db.VarChar(255)
-  // Relations
-  individualUsers IndividualUser[]
-}
+  id           Int     @id @default(autoincrement())
+  title        String
+  price        Int
+  type         String
+  facilities   String?
+  session_type String
+  created_at   String?
+  updated_at   String?
 
-model Role {
-  id                     Int              @id @default(autoincrement())
-  role                   String           @unique @db.VarChar(255)
-  authorized_departments String           @db.VarChar(255)
-  // Relations
-  individualUsers        IndividualUser[]
+  user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int?
 }

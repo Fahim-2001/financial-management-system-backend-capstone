@@ -9,7 +9,7 @@ const errorHandler = require("./middlewares/errorMiddleware");
 const PORT = process.env.PORT || 8000;
 
 // ROUTER IMPORTS
-const IndividualUsersRoute = require("./modules/individual_users/individual_users.route");
+const UsersRoute = require("./modules/users/users.route");
 
 // CORS Options - Defines the allowed to origin to accept requests.
 var corsOptions = {
@@ -34,8 +34,9 @@ app.use(morgan("dev"));
 app.use(express.static("public"));
 
 // CUSTOM API ROUTES
-app.use("/api/v1/individual-users", IndividualUsersRoute);
+app.use("/api/v1/users", UsersRoute);
 app.use(errorHandler);
+
 // ROOT ROUTE
 app.get("/", async (req, res) => {
     res.status(200).json({
