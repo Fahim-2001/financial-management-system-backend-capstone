@@ -9,6 +9,7 @@ const errorHandler = require("./middlewares/errorMiddleware");
 const PORT = process.env.PORT || 8000;
 
 // ROUTER IMPORTS
+const AuthRoute = require("./modules/auth/auth.route");
 const UsersRoute = require("./modules/users/users.route");
 
 // CORS Options - Defines the allowed to origin to accept requests.
@@ -35,6 +36,7 @@ app.use(express.static("public"));
 
 // CUSTOM API ROUTES
 app.use("/api/v1/users", UsersRoute);
+app.use("/api/v1/auth", AuthRoute);
 app.use(errorHandler);
 
 // ROOT ROUTE

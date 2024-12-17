@@ -18,7 +18,7 @@ const getAllUsersFromDB = async () => {
     }
 };
 
-const getExistingUserFromDbById = async (userId) => {
+const getExistingUserFromDbById = async (userId = Number) => {
     try {
         const existingUser = await prisma.user.findUnique({
             where: { id: userId },
@@ -29,7 +29,7 @@ const getExistingUserFromDbById = async (userId) => {
     }
 };
 
-const getExistingUserFromDbByEmail = async (email) => {
+const getExistingUserFromDbByEmail = async (email = String) => {
     try {
         const existingUser = await prisma.user.findUnique({
             where: { email: email },
@@ -40,7 +40,7 @@ const getExistingUserFromDbByEmail = async (email) => {
     }
 };
 
-const insertUserIntoDB = async (user) => {
+const addUserIntoDB = async (user = Object) => {
     try {
         let { first_name, last_name, email, phone_number, password } = user;
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -69,34 +69,42 @@ const insertUserIntoDB = async (user) => {
     }
 };
 
-const updateUserBasicProfileInfoIntoDB = async (userId, user) => {
+const updateUserBasicProfileInfoIntoDB = async (
+    userId = Number,
+    user = Object
+) => {
     try {
+        const existingUser = await getExistingUserFromDbById(userId);
+        if (!existingUser) {
+            throw new Error("No User Found on this Id");
+        }
         const { first_name, last_name, email, phone_number } = user;
 
         const updatedAt = generateTimestamp();
 
-        const updatedUser = await prisma.individualUser.update({
+        const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
-                first_name,
-                last_name,
-                email,
-                phone_number,
+                first_name: first_name,
+                last_name: last_name,
+                email: email,
+                phone_number: phone_number,
                 updated_at: updatedAt,
             },
         });
+        // Implement Logic on removing Email
     } catch (error) {
         throw new Error(error);
     }
 };
 
-const updateUserProfilePicIntoDB = async (userId, user) => {
+const updateUserProfilePicIntoDB = async (userId = Number, user = Object) => {
     try {
         const { profile_picture_url } = user;
 
         const updatedAt = generateTimestamp();
 
-        const updatedUser = await prisma.individualUser.update({
+        const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
                 profile_picture_url,
@@ -108,13 +116,13 @@ const updateUserProfilePicIntoDB = async (userId, user) => {
     }
 };
 
-const updateUserPurchaseInfoIntoDB = async (userId, user) => {
+const updateUserPurchaseInfoIntoDB = async (userId = Number, user = Object) => {
     try {
         const { user_type, purchased_services } = user;
 
         const updatedAt = generateTimestamp();
 
-        const updatedUser = await prisma.individualUser.update({
+        const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
                 user_type,
@@ -127,7 +135,7 @@ const updateUserPurchaseInfoIntoDB = async (userId, user) => {
     }
 };
 
-const deleteUserFromDbById = async (userId) => {
+const deleteUserFromDbById = async (userId = Number) => {
     try {
         const result = await prisma.user.delete({
             where: { id: userId },
@@ -141,7 +149,7 @@ module.exports = {
     getAllUsersFromDB,
     getExistingUserFromDbById,
     getExistingUserFromDbByEmail,
-    insertUserIntoDB,
+    addUserIntoDB,
     updateUserBasicProfileInfoIntoDB,
     updateUserProfilePicIntoDB,
     updateUserPurchaseInfoIntoDB,

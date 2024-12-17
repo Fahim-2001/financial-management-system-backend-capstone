@@ -2,7 +2,8 @@ const { PrismaClient } = require("@prisma/client");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 // const { transporter } = require("../utils/nodemailer");
-const { generateTemporaryPassword } = require("../../utils/generativeFunctions");
+const { generateTemporaryPassword, generateTimestamp } = require("../../utils/generativeFunctions");
+const { findSmallestAvailableId } = require("../../utils/findSmallestAvailableId");
 const prisma = new PrismaClient();
 
 const createToken = async (user) => {
@@ -90,9 +91,39 @@ const sendTemporaryPassword = async (user) => {
     }
 };
 
+const registerUserIntoDB = async (user = Object) => {
+    try {
+        let { first_name, last_name, email, phone_number, password } = user;
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const joinedAt = generateTimestamp();
+
+        const missingId = await findSmallestAvailableId("user");
+        const newUser = await prisma.user.create({
+            data: {
+                id: missingId,
+                first_name,
+                last_name,
+                email,
+                phone_number,
+                hashed_password: hashedPassword,
+                profile_picture_url: null,
+                user_type: "general_user",
+                joined_at: joinedAt,
+                updated_at: joinedAt,
+            },
+        });
+
+        return newUser;
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
 module.exports = {
     createToken,
     verifyUser,
     verifyToken,
     sendTemporaryPassword,
+    registerUserIntoDB
 };

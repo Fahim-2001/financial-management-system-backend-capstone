@@ -9,8 +9,9 @@ const {
     getAllUsersFromDB,
     getExistingUserFromDbById,
     getExistingUserFromDbByEmail,
-    insertUserIntoDB,
+    addUserIntoDB,
     deleteUserFromDbById,
+    updateUserBasicProfileInfoIntoDB,
 } = require("./users.services");
 const cacheKey = "users";
 
@@ -22,12 +23,12 @@ const getAllUsers = async (req, res, next) => {
         const phone = req?.query?.phone;
 
         let allUsers = getCachedData(cacheKey);
-
+        
         if (!allUsers) {
             allUsers = await getAllUsersFromDB();
             setDataToCache(cacheKey, allUsers);
         }
-        // console.log(allUsers)
+        
 
         if (email) {
             allUsers = searchByQuery(allUsers, "email", email);
@@ -83,11 +84,11 @@ const getUserByEmail = async (req, res, next) => {
     }
 };
 
-const createUsers = async (req, res, next) => {
+const addUser = async (req, res, next) => {
     try {
-        const individualUser = req?.body;
+        const user = req?.body;
         const existingUser = await getExistingUserFromDbByEmail(
-            individualUser?.email
+            user?.email
         );
 
         if (existingUser) {
@@ -96,12 +97,7 @@ const createUsers = async (req, res, next) => {
                 .json({ message: "User with this email already exists." });
         }
 
-        const newUser = await insertUserIntoDB(individualUser);
-
-        // Sign a token to the newly registered user
-        const token = await createToken(newUser);
-        res.cookie("token", token);
-        newUser.token = token;
+        const newUser = await addUserIntoDB(user);
 
         deleteCachedData(cacheKey);
         return res.status(201).json({
@@ -114,9 +110,27 @@ const createUsers = async (req, res, next) => {
     }
 };
 
+const updateUserById = async (req, res, next) => {
+    try {
+        const userId = Number(req?.params?.id);
+        const user = req?.body;
+
+        await updateUserBasicProfileInfoIntoDB(userId, user);
+
+        deleteCachedData(cacheKey);
+
+        return res.status(200).json({
+            success: true,
+            message: "User updated successfully!",
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
 const deleteUserById = async (req, res, next) => {
     try {
-        const userId = parseInt(req.params.id);
+        const userId = Number(req?.params?.id);
 
         const existingUser = await getExistingUserFromDbById(userId);
         if (!existingUser) {
@@ -142,6 +156,7 @@ module.exports = {
     getAllUsers,
     getUserById,
     getUserByEmail,
-    createUsers,
+    addUser,
+    updateUserById,
     deleteUserById,
 };
