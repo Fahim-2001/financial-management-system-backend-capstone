@@ -40,7 +40,7 @@ const verifyUser = async (user) => {
         if (!user) throw new Error("No user provided");
 
         // Find the user by email (case insensitive)
-        const registeredUser = await prisma.individualUser.findUnique({
+        const registeredUser = await prisma.user.findUnique({
             where: {
                 email: user.email.trim().toLowerCase(),
             },
@@ -53,7 +53,7 @@ const verifyUser = async (user) => {
         // Compare provided password with the stored hashed password
         const isPasswordValid = await bcrypt.compare(
             user.password,
-            registeredUser.password
+            registeredUser.hashed_password
         );
 
         if (!isPasswordValid) {

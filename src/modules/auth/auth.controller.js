@@ -10,9 +10,8 @@ const {
 } = require("./auth.services");
 const cacheKey = "users";
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
     try {
-        // console.log(req.body);
         const verifiedUser = await verifyUser(req.body);
         const token = await createToken(verifiedUser);
         res.cookie("token", token);
@@ -23,8 +22,7 @@ const login = async (req, res) => {
             token: token,
         });
     } catch (error) {
-        console.log(error.message);
-        return res.status(500).json({ message: `${error.message}` });
+        next(error)
     }
 };
 
