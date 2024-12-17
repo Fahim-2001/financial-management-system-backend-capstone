@@ -46,7 +46,7 @@ const getAllUsers = async (req, res, next) => {
             allUsers = searchByQuery(allUsers, "phone_number", phone);
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             total: allUsers.length,
             data: allUsers,
