@@ -53,14 +53,14 @@ model Service {
 
 // Prisma Schema for Expenses
 model Expense {
-  id        Int     @id @default(autoincrement())
-  title     String
-  amount    Float
-  category  String
-  date      String
-  createdAt String?
-  updatedAt String?
-  userId    Int?
+  id         Int     @id @default(autoincrement())
+  title      String
+  amount     Float
+  category   String
+  date       String
+  createdAt  String?
+  updatedAt  String?
+  userId     Int?
 
   user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

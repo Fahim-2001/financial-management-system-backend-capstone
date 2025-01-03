@@ -4,4 +4,13 @@ const searchByQuery = (records, query, value) => {
     );
 };
 
-module.exports = { searchByQuery };
+const searchByRangeQuery = (records, query, startTime, endTime) => {
+    return records?.filter((record) => {
+        const requiredDay = record[query];
+        const reqiredDayInMs = new Date(requiredDay).getTime();
+        return startTime <= reqiredDayInMs && reqiredDayInMs <= endTime;
+    });
+    
+};
+
+module.exports = { searchByQuery, searchByRangeQuery };

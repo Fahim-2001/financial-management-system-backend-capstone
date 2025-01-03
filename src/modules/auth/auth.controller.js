@@ -1,7 +1,5 @@
 const { deleteCachedData } = require("../../utils/cache");
-const {
-    getExistingUserFromDbByEmail,
-} = require("../users/users.services");
+const { getExistingUserFromDbByEmail } = require("../users/users.services");
 const {
     verifyUser,
     createToken,
@@ -16,21 +14,23 @@ const login = async (req, res, next) => {
         const token = await createToken(verifiedUser);
         res.cookie("token", token);
         return res.status(200).json({
-            email: verifiedUser?.email,
-            user_type: verifiedUser?.user_type,
-            token: token,
+            success: true,
+            message: "Successfully logged in.",
+            user: {
+                email: verifiedUser?.email,
+                user_type: verifiedUser?.user_type,
+                token: token,
+            },
         });
     } catch (error) {
-        next(error)
+        next(error);
     }
 };
 
 const signup = async (req, res, next) => {
     try {
         const user = req?.body;
-        const existingUser = await getExistingUserFromDbByEmail(
-            user?.email
-        );
+        const existingUser = await getExistingUserFromDbByEmail(user?.email);
 
         if (existingUser) {
             return res
@@ -49,11 +49,11 @@ const signup = async (req, res, next) => {
         return res.status(201).json({
             success: true,
             message: "Sign Up successful",
-            user:{
+            user: {
                 email: newUser?.email,
                 user_type: newUser?.user_type,
-                token: newUser?.token
-            }
+                token: newUser?.token,
+            },
         });
     } catch (error) {
         next(error);

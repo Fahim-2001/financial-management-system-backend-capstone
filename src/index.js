@@ -12,6 +12,7 @@ const PORT = process.env.PORT || 8000;
 const AuthRoute = require("./modules/auth/auth.route");
 const UsersRoute = require("./modules/users/users.route");
 const FinServicesRoute = require("./modules/fin_services/fin_services.route");
+const PersonalExpenses = require("./modules/personal_services_features/expense_tracking/expense_tracking.route");
 
 // CORS Options - Defines the allowed to origin to accept requests.
 var corsOptions = {
@@ -39,6 +40,7 @@ app.use(express.static("public"));
 app.use("/api/v1/users", UsersRoute);
 app.use("/api/v1/auth", AuthRoute);
 app.use("/api/v1/financial-services", FinServicesRoute);
+app.use("/api/v1/personal/expenses", PersonalExpenses);
 app.use(errorHandler);
 
 // ROOT ROUTE

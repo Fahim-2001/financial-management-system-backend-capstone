@@ -1,6 +1,9 @@
+const cacheModule = require("../../../utils/cache");
+const { searchByRangeQuery } = require("../../../utils/searchByQuery");
 const expenseService = require("./expense_tracking.services");
+const cacheKey = "expenses";
 
-exports.createExpense = async (req, res) => {
+exports.createExpense = async (req, res, next) => {
     try {
         const userId = req?.body?.userId;
         if (!userId)
@@ -9,6 +12,8 @@ exports.createExpense = async (req, res) => {
                 .json({ success: false, message: "User ID is required" });
 
         const expense = await expenseService.createExpenseIntoDB(req?.body);
+
+        cacheModule.deleteCachedData(cacheKey);
         return res.status(201).json({
             success: true,
             message: "Successfully entered a new expense entry",
@@ -19,17 +24,35 @@ exports.createExpense = async (req, res) => {
     }
 };
 
-exports.getAllExpenses = async (req, res) => {
+exports.getAllExpenses = async (req, res, next) => {
     try {
-        const userId = parseInt(req.query.userId);
+        const userId = parseInt(req?.query?.user_id);
+        const month = req?.query?.month;
+        const year = req?.query?.year;
+        const days = req?.query?.days;
+        console.log(Number(days));
         if (!userId)
             return res
                 .status(400)
                 .json({ success: false, message: "User ID is required" });
 
-        const expenses = await expenseService.getAllExpensesByUserFromDB(
-            userId
-        );
+        let expenses = cacheModule.getCachedData(cacheKey);
+        if (!expenses) {
+            expenses = await expenseService.getAllExpensesByUserFromDB(userId);
+            cacheModule.setDataToCache(cacheKey, expenses);
+        }
+
+        if (days) {
+            startDayInMs = Date.now() - Number(days) * 86400000; // 1 day = 86,400,000 milliseconds
+            expenses = searchByRangeQuery(
+                expenses,
+                "date",
+                startDayInMs,
+                Date.now()
+            );
+            console.log(expenses);
+        }
+
         return res.status(200).json({
             success: true,
             total: expenses?.length,
@@ -40,14 +63,15 @@ exports.getAllExpenses = async (req, res) => {
     }
 };
 
-exports.getExpenseById = async (req, res) => {
+exports.getExpenseById = async (req, res, next) => {
     try {
         const id = req?.params?.id;
         const expense = await expenseService.getExpenseByIdFromDB(parseInt(id));
         if (!expense)
-            return res
-                .status(404)
-                .json({ success: false, message: "Expense not found" });
+            return res.status(404).json({
+                success: false,
+                message: "Expense not found",
+            });
         return res.status(200).json({
             success: true,
             data: expense,
@@ -57,7 +81,7 @@ exports.getExpenseById = async (req, res) => {
     }
 };
 
-exports.updateExpense = async (req, res) => {
+exports.updateExpense = async (req, res, next) => {
     try {
         const userId = req?.body?.userId;
         if (!userId)
@@ -74,16 +98,18 @@ exports.updateExpense = async (req, res) => {
                 .status(404)
                 .json({ success: false, message: "Expense not found" });
 
+        cacheModule.deleteCachedData(cacheKey);
         return res.status(200).json({
             success: true,
             message: "Expense data updated successfully.",
+            data: updatedExpense,
         });
     } catch (error) {
         next(error);
     }
 };
 
-exports.deleteExpense = async (req, res) => {
+exports.deleteExpense = async (req, res, next) => {
     try {
         const deleted = await expenseService.deleteExpenseFromDB(
             parseInt(req?.params?.id)

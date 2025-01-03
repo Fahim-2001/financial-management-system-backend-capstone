@@ -1,7 +1,7 @@
 const NodeCache = require("node-cache");
 const nodeCache = new NodeCache();
 
-const getCachedData = (key) => {
+const getCachedData = (key = String) => {
     try {
         if (!key) throw new Error("No key provided to caching process");
 
@@ -17,7 +17,7 @@ const getCachedData = (key) => {
     }
 };
 
-const setDataToCache = (key, data) => {
+const setDataToCache = (key = String, data) => {
     try {
         if (!key) throw new Error("No key provided to caching process");
         if (!data) throw new Error("No data provided to caching process");
@@ -28,7 +28,7 @@ const setDataToCache = (key, data) => {
     }
 };
 
-const deleteCachedData = (key) => {
+const deleteCachedData = (key = String) => {
     try {
         if (!key) throw new Error("No key provided to caching process");
 

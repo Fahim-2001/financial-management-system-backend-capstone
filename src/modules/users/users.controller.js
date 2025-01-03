@@ -21,6 +21,7 @@ const getAllUsers = async (req, res, next) => {
         const last_name = req?.query?.last_name;
         const email = req?.query?.email;
         const phone = req?.query?.phone;
+        const type = req?.query?.type;
 
         let allUsers = getCachedData(cacheKey);
         
@@ -44,6 +45,10 @@ const getAllUsers = async (req, res, next) => {
 
         if (phone) {
             allUsers = searchByQuery(allUsers, "phone_number", phone);
+        }
+
+        if (type) {
+            allUsers = searchByQuery(allUsers, "user_type", type);
         }
 
         return res.status(200).json({

@@ -1,15 +1,21 @@
+const { PrismaClient } = require("@prisma/client");
 const { generateTimestamp } = require("../../../utils/generativeFunctions");
-const prisma = require("../prismaClient");
-
-exports.createExpenseIntoDB = async (data) => {
+const { timestampToMilliseconds } = require("../../../utils/timestampToMS");
+const {
+    findSmallestAvailableId,
+} = require("../../../utils/findSmallestAvailableId");
+const prisma = new PrismaClient();
+exports.createExpenseIntoDB = async (data = Object) => {
     try {
+        const missingId = await findSmallestAvailableId("expense");
         const date = generateTimestamp();
         return prisma.expense.create({
             data: {
+                id: missingId,
                 title: data.title,
                 amount: data.amount,
                 category: data.category,
-                date: date,
+                date: data.date,
                 createdAt: date,
                 updatedAt: date,
                 userId: data.userId,
@@ -20,17 +26,18 @@ exports.createExpenseIntoDB = async (data) => {
     }
 };
 
-exports.getAllExpensesByUserFromDB = async (userId) => {
+exports.getAllExpensesByUserFromDB = async (userId = Number) => {
     try {
         return prisma.expense.findMany({
             where: { userId },
+            orderBy: { id: "asc" },
         });
     } catch (error) {
         throw new Error(error);
     }
 };
 
-exports.getExpenseByIdFromDB = async (id) => {
+exports.getExpenseByIdFromDB = async (id = Number) => {
     try {
         return prisma.expense.findUnique({ where: { id } });
     } catch (error) {
@@ -38,15 +45,16 @@ exports.getExpenseByIdFromDB = async (id) => {
     }
 };
 
-exports.updateExpenseInDB = async (id, data) => {
+exports.updateExpenseInDB = async (id = Number, data = Object) => {
     try {
+        console.log(data.date);
         return prisma.expense.update({
             where: { id },
             data: {
                 title: data.title,
                 amount: data.amount,
                 category: data.category,
-                date: new Date(data.date),
+                date: data.date,
                 userId: data.userId,
             },
         });
@@ -55,7 +63,7 @@ exports.updateExpenseInDB = async (id, data) => {
     }
 };
 
-exports.deleteExpenseFromDB = async (id) => {
+exports.deleteExpenseFromDB = async (id = Number) => {
     try {
         return prisma.expense.delete({ where: { id } });
     } catch (error) {
