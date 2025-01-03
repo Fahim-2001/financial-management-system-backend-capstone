@@ -16,9 +16,8 @@ const login = async (req, res, next) => {
         const token = await createToken(verifiedUser);
         res.cookie("token", token);
         return res.status(200).json({
-            username: verifiedUser?.username,
             email: verifiedUser?.email,
-            role: verifiedUser?.role,
+            user_type: verifiedUser?.user_type,
             token: token,
         });
     } catch (error) {
@@ -49,7 +48,12 @@ const signup = async (req, res, next) => {
         deleteCachedData(cacheKey);
         return res.status(201).json({
             success: true,
-            message: "Sign Up successful"
+            message: "Sign Up successful",
+            user:{
+                email: newUser?.email,
+                user_type: newUser?.user_type,
+                token: newUser?.token
+            }
         });
     } catch (error) {
         next(error);

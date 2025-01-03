@@ -59,7 +59,7 @@ const verifyUser = async (user) => {
         if (!isPasswordValid) {
             throw new Error("Password didn't match");
         }
-
+        console.log(registeredUser);
         return registeredUser;
     } catch (error) {
         throw new Error(error.message);
