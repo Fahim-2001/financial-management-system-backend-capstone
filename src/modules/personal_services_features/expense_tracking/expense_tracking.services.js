@@ -26,11 +26,21 @@ exports.createExpenseIntoDB = async (data = Object) => {
     }
 };
 
-exports.getAllExpensesByUserFromDB = async (userId = Number) => {
+exports.getAllExpenses = async () => {
     try {
-        return prisma.expense.findMany({
-            where: { userId },
+        return await prisma.expense.findMany({
             orderBy: { id: "asc" },
+        });
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+exports.getAllExpensesByUserId = async (userId = Number, expenses = Array) => {
+    try {
+        return expenses?.filter((expense) => {
+            console.log(expense.userId)
+            console.log(Number(expense.user_id) == userId)
         });
     } catch (error) {
         throw new Error(error);

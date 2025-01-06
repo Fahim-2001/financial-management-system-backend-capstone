@@ -30,16 +30,19 @@ exports.getAllExpenses = async (req, res, next) => {
         const month = req?.query?.month;
         const year = req?.query?.year;
         const days = req?.query?.days;
-        console.log(Number(days));
-        if (!userId)
-            return res
-                .status(400)
-                .json({ success: false, message: "User ID is required" });
 
         let expenses = cacheModule.getCachedData(cacheKey);
         if (!expenses) {
-            expenses = await expenseService.getAllExpensesByUserFromDB(userId);
+            expenses = await expenseService.getAllExpenses();
             cacheModule.setDataToCache(cacheKey, expenses);
+        }
+
+        if (userId) {
+            console.log(typeof userId)
+            expenses = await expenseService.getAllExpensesByUserId(
+                userId,
+                expenses
+            );
         }
 
         if (days) {
@@ -50,7 +53,6 @@ exports.getAllExpenses = async (req, res, next) => {
                 startDayInMs,
                 Date.now()
             );
-            console.log(expenses);
         }
 
         return res.status(200).json({
