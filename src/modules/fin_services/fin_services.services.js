@@ -3,7 +3,7 @@ const { generateTimestamp } = require("../../utils/generativeFunctions");
 const {
     findSmallestAvailableId,
 } = require("../../utils/findSmallestAvailableId");
-const prisma = new PrismaClient();
+const prisma = require("../../config/prisma.config");
 
 // Service to get all services
 const getAllServices = async () => {

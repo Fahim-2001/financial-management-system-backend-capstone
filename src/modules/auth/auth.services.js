@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 // const { transporter } = require("../utils/nodemailer");
 const { generateTemporaryPassword, generateTimestamp } = require("../../utils/generativeFunctions");
 const { findSmallestAvailableId } = require("../../utils/findSmallestAvailableId");
-const prisma = new PrismaClient();
+const prisma = require("../../config/prisma.config");
 
 const createToken = async (user) => {
     try {

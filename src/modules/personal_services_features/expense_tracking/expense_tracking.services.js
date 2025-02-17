@@ -1,10 +1,9 @@
-const { PrismaClient } = require("@prisma/client");
 const { generateTimestamp } = require("../../../utils/generativeFunctions");
 const { timestampToMilliseconds } = require("../../../utils/timestampToMS");
 const {
     findSmallestAvailableId,
 } = require("../../../utils/findSmallestAvailableId");
-const prisma = new PrismaClient();
+const prisma = require("../../../config/prisma.config");
 exports.createExpenseIntoDB = async (data = Object) => {
     try {
         const missingId = await findSmallestAvailableId("expense");
