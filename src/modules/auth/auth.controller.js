@@ -17,10 +17,16 @@ const login = async (req, res, next) => {
             success: true,
             message: "Successfully logged in.",
             user: {
+                id: verifiedUser?.id,
+                first_name: verifiedUser?.first_name,
+                last_name: verifiedUser?.last_name,
                 email: verifiedUser?.email,
+                phone_number: verifiedUser?.phone_number,
+                profile_picture_url: verifiedUser?.profile_picture_url,
                 user_type: verifiedUser?.user_type,
-                token: token,
+                joined_at: verifiedUser?.joined_at,
             },
+            token: token,
         });
     } catch (error) {
         next(error);

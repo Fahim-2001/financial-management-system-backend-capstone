@@ -11,14 +11,14 @@ exports.createExpenseIntoDB = async (data = Object) => {
         const date = generateTimestamp();
         return prisma.expense.create({
             data: {
-                id: missingId,
+                // id: missingId,
                 title: data.title,
                 amount: data.amount,
                 category: data.category,
                 date: data.date,
-                createdAt: date,
-                updatedAt: date,
-                userId: data.userId,
+                created_at: date,
+                updated_at: date,
+                user_id: data.user_id,
             },
         });
     } catch (error) {
@@ -39,8 +39,7 @@ exports.getAllExpenses = async () => {
 exports.getAllExpensesByUserId = async (userId = Number, expenses = Array) => {
     try {
         return expenses?.filter((expense) => {
-            console.log(expense.userId)
-            console.log(Number(expense.user_id) == userId)
+            return expense?.user_id == userId;
         });
     } catch (error) {
         throw new Error(error);
@@ -65,7 +64,7 @@ exports.updateExpenseInDB = async (id = Number, data = Object) => {
                 amount: data.amount,
                 category: data.category,
                 date: data.date,
-                userId: data.userId,
+                user_id: data.user_id,
             },
         });
     } catch (error) {

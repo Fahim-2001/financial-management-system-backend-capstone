@@ -5,7 +5,7 @@ const cacheKey = "expenses";
 
 exports.createExpense = async (req, res, next) => {
     try {
-        const userId = req?.body?.userId;
+        const userId = req?.body?.user_id;
         if (!userId)
             return res
                 .status(400)
@@ -30,7 +30,7 @@ exports.getAllExpenses = async (req, res, next) => {
         const month = req?.query?.month;
         const year = req?.query?.year;
         const days = req?.query?.days;
-
+        
         let expenses = cacheModule.getCachedData(cacheKey);
         if (!expenses) {
             expenses = await expenseService.getAllExpenses();
@@ -38,7 +38,6 @@ exports.getAllExpenses = async (req, res, next) => {
         }
 
         if (userId) {
-            console.log(typeof userId)
             expenses = await expenseService.getAllExpensesByUserId(
                 userId,
                 expenses
@@ -85,7 +84,7 @@ exports.getExpenseById = async (req, res, next) => {
 
 exports.updateExpense = async (req, res, next) => {
     try {
-        const userId = req?.body?.userId;
+        const userId = req?.body?.user_id;
         if (!userId)
             return res
                 .status(400)

@@ -1,11 +1,13 @@
 const { PrismaClient } = require("@prisma/client");
 const { generateTimestamp } = require("../../utils/generativeFunctions");
-const { findSmallestAvailableId } = require("../../utils/findSmallestAvailableId");
+const {
+    findSmallestAvailableId,
+} = require("../../utils/findSmallestAvailableId");
 const prisma = new PrismaClient();
 
 // Service to get all services
 const getAllServices = async () => {
-    return await prisma.service.findMany();
+    return await prisma.service.findMany({ orderBy: { id: "asc" } });
 };
 
 // Service to get a service by ID
@@ -19,9 +21,9 @@ const getServiceById = async (id) => {
 const createService = async (data) => {
     const { title, price, type, facilities, session_type, userId } = data;
     const date = generateTimestamp();
-    
-    const missingId =await findSmallestAvailableId("service");
-    
+
+    const missingId = await findSmallestAvailableId("service");
+
     return await prisma.service.create({
         data: {
             id: missingId,
