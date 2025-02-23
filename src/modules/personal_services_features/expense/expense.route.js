@@ -1,6 +1,6 @@
 const express = require("express");
 const expensesRouter = express.Router();
-const expenseController = require("./expense_tracking.controller");
+const expenseController = require("./expense.controller");
 
 // CRUD routes
 expensesRouter.post("/", expenseController.createExpense);

@@ -19,6 +19,7 @@ model User {
   user_type           String?
   purchased_services  Service[]
   users_expenses      Expense[]
+  users_income        Income[]
   joined_at           String?
   updated_at          String?
 }
@@ -63,4 +64,18 @@ model Expense {
   user_id    Int?
 
   user User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+// Prisma Schema for Income
+model Income {
+  id         Int     @id @default(autoincrement())
+  amount     Float
+  source     String
+  category   String
+  notes      String?
+  date       String
+  created_at String?
+  updated_at String?
+  user_id    Int?
+  user       User?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

@@ -1,6 +1,6 @@
 const cacheModule = require("../../../utils/cache");
 const { searchByRangeQuery } = require("../../../utils/searchByQuery");
-const expenseService = require("./expense_tracking.services");
+const expenseService = require("./expense.services");
 const cacheKey = "expenses";
 
 exports.createExpense = async (req, res, next) => {
