@@ -1,5 +1,5 @@
 const incomeService = require("./income.services");
-exports.createIncome = async (req, res) => {
+exports.createIncome = async (req, res, next) => {
     try {
         const userId = req?.body?.user_id;
         if (!userId)
@@ -14,59 +14,72 @@ exports.createIncome = async (req, res) => {
             data: income,
         });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        next(err);
     }
 };
 
-exports.getAllIncomes = async (req, res) => {
+exports.getAllIncomes = async (req, res, next) => {
     try {
         const incomes = await incomeService.getIncomesFromDB(req.query);
-        res.status(200).json(incomes);
+        res.status(200).json({
+            success: true,
+            total: incomes.length,
+            data: incomes,
+        });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        next(err);
     }
 };
 
-exports.getIncomeById = async (req, res) => {
+exports.getIncomeById = async (req, res, next) => {
     try {
         const income = await incomeService.getIncomeById(Number(req.params.id));
         res.status(200).json(income);
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        next(err);
     }
 };
 
-exports.updateIncome = async (req, res) => {
+exports.updateIncome = async (req, res, next) => {
     try {
-        const income = await incomeService.updateIncome(
-            Number(req.params.id),
-            req.body
+        const incomeId = parseInt(req?.params?.id);
+        const income = await incomeService.updateIncomeFromDB(
+            incomeId,
+            req?.body
         );
-        res.status(200).json(income);
+        return res
+            .status(200)
+            .json({
+                success: true,
+                message: `Successfully updated income entry ${incomeId}`,
+                data: income,
+            });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        next(err);
     }
 };
 
-exports.deleteIncome = async (req, res) => {
+exports.deleteIncome = async (req, res, next) => {
     try {
-        const deleted = await incomeService.deleteIncome(
-            Number(req?.params?.id)
-        );
-        // if (!deleted) {
-        //     return res
-        //         .status(404)
-        //         .json({
-        //             success: false,
-        //             message: "Income with this id not found",
-        //         });
-        // }
+        const incomeId = parseInt(req?.params?.id);
 
-        return res.status(204).json({
+        const deleted = await incomeService.deleteIncomeFromDB(incomeId);
+
+        if (!deleted) {
+            console.log("Income not found:", incomeId);
+            return res.status(404).json({
+                success: false,
+                message: "Income with this id not found",
+            });
+        }
+
+        return res.status(200).json({
             success: true,
-            message: "Income deleted with this id successfully",
+            message: `Income deleted with this id: ${incomeId} successfully`,
+            data: deleted,
         });
     } catch (err) {
-        res.status(400).json({ error: err.message });
+        console.error("Error deleting income:", err);
+        next(err);
     }
 };

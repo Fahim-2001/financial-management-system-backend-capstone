@@ -13,7 +13,7 @@ exports.createIncome = async (data = Object) => {
                 source: data?.source,
                 category: data?.category,
                 notes: data?.notes,
-                date: date,
+                date: data?.date,
                 created_at: date,
                 updated_at: date,
                 user_id: data?.user_id,
@@ -40,17 +40,19 @@ exports.getIncomeById = async (id) => {
     }
 };
 
-exports.updateIncome = async (id, data) => {
+exports.updateIncomeFromDB = async (id, data) => {
     try {
+        const date = generateTimestamp();
+        data.updated_at=date;
         return await prisma.income.update({ where: { id }, data });
     } catch (error) {
         throw new Error(error);
     }
 };
 
-exports.deleteIncome = async (id = Number) => {
+exports.deleteIncomeFromDB = async (id = Number) => {
     try {
-        return prisma.income.delete({ where: { id } });
+        return await prisma.income.delete({ where: { id } });
     } catch (error) {
         throw new Error(error);
     }
