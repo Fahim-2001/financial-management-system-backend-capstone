@@ -10,7 +10,6 @@ const searchByRangeQuery = (records, query, startTime, endTime) => {
         const reqiredDayInMs = new Date(requiredDay).getTime();
         return startTime <= reqiredDayInMs && reqiredDayInMs <= endTime;
     });
-    
 };
 
 module.exports = { searchByQuery, searchByRangeQuery };

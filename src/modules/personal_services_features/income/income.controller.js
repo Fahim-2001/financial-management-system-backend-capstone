@@ -1,4 +1,7 @@
+const cacheModule = require("../../../utils/cache");
+const { searchByRangeQuery } = require("../../../utils/searchByQuery");
 const incomeService = require("./income.services");
+const cacheKey = "incomes";
 exports.createIncome = async (req, res, next) => {
     try {
         const userId = req?.body?.user_id;
@@ -8,6 +11,8 @@ exports.createIncome = async (req, res, next) => {
                 .json({ success: false, message: "User ID is required" });
 
         const income = await incomeService.createIncome(req.body);
+        
+        cacheModule.deleteCachedData(cacheKey)
         return res.status(201).json({
             success: true,
             message: "Successfully entered a new income entry",
@@ -20,7 +25,33 @@ exports.createIncome = async (req, res, next) => {
 
 exports.getAllIncomes = async (req, res, next) => {
     try {
-        const incomes = await incomeService.getIncomesFromDB(req.query);
+        const userId = parseInt(req?.query?.user_id);
+        const month = req?.query?.month;
+        const year = req?.query?.year;
+        const days = req?.query?.days;
+
+        let incomes = cacheModule.getCachedData(cacheKey);
+        if (!incomes) {
+            incomes = await incomeService.getIncomesFromDB();
+            cacheModule.setDataToCache(cacheKey, incomes);
+        }
+
+        if (userId) {
+            incomes = await incomeService.getAllIncomesByUserId(
+                userId,
+                incomes
+            );
+        }
+
+        if (days) {
+            startDayInMs = Date.now() - Number(days) * 86400000; // 1 day = 86,400,000 milliseconds
+            incomes = searchByRangeQuery(
+                incomes,
+                "date",
+                startDayInMs,
+                Date.now()
+            );
+        }
         res.status(200).json({
             success: true,
             total: incomes.length,
@@ -47,13 +78,11 @@ exports.updateIncome = async (req, res, next) => {
             incomeId,
             req?.body
         );
-        return res
-            .status(200)
-            .json({
-                success: true,
-                message: `Successfully updated income entry ${incomeId}`,
-                data: income,
-            });
+        return res.status(200).json({
+            success: true,
+            message: `Successfully updated income entry ${incomeId}`,
+            data: income,
+        });
     } catch (err) {
         next(err);
     }
