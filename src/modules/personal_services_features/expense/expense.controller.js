@@ -1,5 +1,9 @@
 const cacheModule = require("../../../utils/cache");
-const { searchByRangeQuery } = require("../../../utils/searchByQuery");
+const {
+    filterDataByDaysRange,
+    filterDataByMonth,
+    filterDataByYear,
+} = require("../../../utils/searchByQuery");
 const expenseService = require("./expense.services");
 const cacheKey = "expenses";
 
@@ -46,12 +50,16 @@ exports.getAllExpenses = async (req, res, next) => {
 
         if (days) {
             startDayInMs = Date.now() - Number(days) * 86400000; // 1 day = 86,400,000 milliseconds
-            expenses = searchByRangeQuery(
+            expenses = filterDataByDaysRange(
                 expenses,
                 "date",
                 startDayInMs,
                 Date.now()
             );
+        } else if (month && year) {
+            expenses = filterDataByMonth(expenses, month, year);
+        } else if (year) {
+            expenses = filterDataByYear(expenses, year);
         }
 
         return res.status(200).json({

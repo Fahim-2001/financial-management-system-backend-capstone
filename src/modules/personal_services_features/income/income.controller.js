@@ -1,5 +1,9 @@
 const cacheModule = require("../../../utils/cache");
-const { searchByRangeQuery } = require("../../../utils/searchByQuery");
+const {
+    filterDataByDaysRange,
+    filterDataByMonth,
+    filterDataByYear,
+} = require("../../../utils/searchByQuery");
 const incomeService = require("./income.services");
 const cacheKey = "incomes";
 exports.createIncome = async (req, res, next) => {
@@ -11,8 +15,8 @@ exports.createIncome = async (req, res, next) => {
                 .json({ success: false, message: "User ID is required" });
 
         const income = await incomeService.createIncome(req.body);
-        
-        cacheModule.deleteCachedData(cacheKey)
+
+        cacheModule.deleteCachedData(cacheKey);
         return res.status(201).json({
             success: true,
             message: "Successfully entered a new income entry",
@@ -45,14 +49,19 @@ exports.getAllIncomes = async (req, res, next) => {
 
         if (days) {
             startDayInMs = Date.now() - Number(days) * 86400000; // 1 day = 86,400,000 milliseconds
-            incomes = searchByRangeQuery(
+            incomes = filterDataByDaysRange(
                 incomes,
                 "date",
                 startDayInMs,
                 Date.now()
             );
+        } else if (month && year) {
+            incomes = filterDataByMonth(incomes, month, year);
+        } else if (year) {
+            incomes = filterDataByYear(incomes, year);
         }
-        res.status(200).json({
+
+        return res.status(200).json({
             success: true,
             total: incomes.length,
             data: incomes,
