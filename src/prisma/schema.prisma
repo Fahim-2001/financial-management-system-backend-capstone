@@ -9,10 +9,10 @@ datasource db {
 
 // Prisma Schema for Individual Users
 model User {
-  id                  Int       @id @default(autoincrement())
+  id                  Int           @id @default(autoincrement())
   first_name          String
   last_name           String?
-  email               String    @unique
+  email               String        @unique
   phone_number        String
   hashed_password     String
   profile_picture_url String?
@@ -20,6 +20,7 @@ model User {
   purchased_services  Service[]
   users_expenses      Expense[]
   users_income        Income[]
+  users_savings_goals SavingsGoal[]
   joined_at           String?
   updated_at          String?
 }
@@ -78,4 +79,20 @@ model Income {
   updated_at String?
   user_id    Int?
   user       User?   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+// Prisma Schema for Savings Goal
+model SavingsGoal {
+  id            Int       @id @default(autoincrement())
+  title         String
+  targetAmount  Float
+  currentAmount Float     @default(0)
+  startDate     String  
+  endDate       String?
+  status        String    @default("In Progress") // In Progress, Completed, Canceled
+  created_at String?
+  updated_at String?
+
+  user_id Int?
+  User    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }

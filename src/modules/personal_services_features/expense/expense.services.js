@@ -12,7 +12,7 @@ exports.createExpenseIntoDB = async (data = Object) => {
             data: {
                 // id: missingId,
                 title: data.title,
-                amount: data.amount,
+                amount: parseFloat(data.amount),
                 category: data.category,
                 date: data.date,
                 created_at: date,
