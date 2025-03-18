@@ -40,14 +40,14 @@ exports.getAllExpenses = async (req, res, next) => {
             expenses = await expenseService.getAllExpenses();
             cacheModule.setDataToCache(cacheKey, expenses);
         }
-
+        
         if (userId) {
             expenses = await expenseService.getAllExpensesByUserId(
                 userId,
                 expenses
             );
         }
-
+        
         if (days) {
             startDayInMs = Date.now() - Number(days) * 86400000; // 1 day = 86,400,000 milliseconds
             expenses = filterDataByDaysRange(

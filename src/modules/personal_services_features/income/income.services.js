@@ -11,7 +11,7 @@ exports.createIncome = async (data = Object) => {
         return await prisma.income.create({
             data: {
                 id: missingId,
-                amount: data?.amount,
+                amount: parseFloat(data?.amount),
                 source: data?.source,
                 category: data?.category,
                 notes: data?.notes,
