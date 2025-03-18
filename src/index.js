@@ -2,10 +2,19 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const morgan = require("morgan");
 require("dotenv").config();
 require("colors");
+const errorHandler = require("./middlewares/errorMiddleware");
+const { morganMiddleware } = require("./middlewares/logging.middleware");
 const PORT = process.env.PORT || 8000;
+
+// ROUTER IMPORTS
+const AuthRoute = require("./modules/auth/auth.route");
+const UsersRoute = require("./modules/users/users.route");
+const FinServicesRoute = require("./modules/fin_services/fin_services.route");
+const PersonalExpenses = require("./modules/personal_services_features/expense/expense.route");
+const PersonalIncomes = require("./modules/personal_services_features/income/income.route");
+const PersonalSavingsGoals = require("./modules/personal_services_features/savings_goals/savingsGoals.route");
 
 // CORS Options - Defines the allowed to origin to accept requests.
 var corsOptions = {
@@ -26,13 +35,23 @@ var corsOptions = {
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(morgan("dev"));
+app.use(morganMiddleware);
 app.use(express.static("public"));
+
+// CUSTOM API ROUTES
+app.use("/api/v1/users", UsersRoute);
+app.use("/api/v1/auth", AuthRoute);
+app.use("/api/v1/financial-services", FinServicesRoute);
+app.use("/api/v1/personal/expenses", PersonalExpenses);
+app.use("/api/v1/personal/incomes", PersonalIncomes);
+app.use("/api/v1/personal/savings-goals", PersonalSavingsGoals);
+app.use(errorHandler);
 
 // ROOT ROUTE
 app.get("/", async (req, res) => {
     res.status(200).json({
-        message: "Welcome to The Valor's Financial Management System Backend Service.",
+        message:
+            "Welcome to The Valor's Financial Management System Backend Service.",
     });
 });
 
