@@ -3,11 +3,13 @@ const {
     findSmallestAvailableId,
 } = require("../../../utils/findSmallestAvailableId");
 const { generateTimestamp } = require("../../../utils/generativeFunctions");
+const { convertDateFormat } = require("../../../utils/timestampToMS");
 
 exports.createIncome = async (data = Object) => {
     try {
         const missingId = await findSmallestAvailableId("income");
         const date = generateTimestamp();
+        const userGivenDate = convertDateFormat(data.date);
         return await prisma.income.create({
             data: {
                 id: missingId,
@@ -15,7 +17,7 @@ exports.createIncome = async (data = Object) => {
                 source: data?.source,
                 category: data?.category,
                 notes: data?.notes,
-                date: data?.date,
+                date: userGivenDate,
                 created_at: date,
                 updated_at: date,
                 user_id: data?.user_id,
@@ -28,7 +30,7 @@ exports.createIncome = async (data = Object) => {
 
 exports.getIncomesFromDB = async (filters) => {
     try {
-        return await prisma.income.findMany({ orderBy: { id: "asc"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               } });
+        return await prisma.income.findMany({ orderBy: { id: "asc" } });
     } catch (error) {
         throw new Error(error);
     }
@@ -56,7 +58,17 @@ exports.updateIncomeFromDB = async (id, data) => {
     try {
         const date = generateTimestamp();
         data.updated_at = date;
-        return await prisma.income.update({ where: { id }, data });
+        const userGivenDate = convertDateFormat(data.date);
+        return await prisma.income.update({
+            where: { id },
+            data: {
+                title: data.title,
+                amount: parseFloat(data.amount),
+                category: data.category,
+                date: userGivenDate,
+                user_id: data.user_id,
+            },
+        });
     } catch (error) {
         throw new Error(error);
     }

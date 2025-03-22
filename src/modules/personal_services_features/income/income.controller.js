@@ -87,6 +87,8 @@ exports.updateIncome = async (req, res, next) => {
             incomeId,
             req?.body
         );
+
+        cacheModule.deleteCachedData(cacheKey)
         return res.status(200).json({
             success: true,
             message: `Successfully updated income entry ${incomeId}`,
@@ -111,6 +113,7 @@ exports.deleteIncome = async (req, res, next) => {
             });
         }
 
+        cacheModule.deleteCachedData(cacheKey)
         return res.status(200).json({
             success: true,
             message: `Income deleted with this id: ${incomeId} successfully`,
