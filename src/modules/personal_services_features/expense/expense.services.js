@@ -1,5 +1,8 @@
 const { generateTimestamp } = require("../../../utils/generativeFunctions");
-const { timestampToMilliseconds, convertDateFormat } = require("../../../utils/timestampToMS");
+const {
+    timestampToMilliseconds,
+    convertDateFormat,
+} = require("../../../utils/timestampToMS");
 const {
     findSmallestAvailableId,
 } = require("../../../utils/findSmallestAvailableId");
@@ -8,10 +11,10 @@ exports.createExpenseIntoDB = async (data = Object) => {
     try {
         const missingId = await findSmallestAvailableId("expense");
         const date = generateTimestamp();
-        const userGivenDate = convertDateFormat(data.date)
+        const userGivenDate = convertDateFormat(data.date);
         return prisma.expense.create({
             data: {
-                // id: missingId,
+                id: missingId,
                 title: data.title,
                 amount: parseFloat(data.amount),
                 category: data.category,
@@ -58,13 +61,14 @@ exports.getExpenseByIdFromDB = async (id = Number) => {
 exports.updateExpenseInDB = async (id = Number, data = Object) => {
     try {
         console.log(data.date);
+        const userGivenDate = convertDateFormat(data.date);
         return prisma.expense.update({
             where: { id },
             data: {
                 title: data.title,
-                amount: data.amount,
+                amount: parseFloat(data.amount),
                 category: data.category,
-                date: data.date,
+                date: userGivenDate,
                 user_id: data.user_id,
             },
         });

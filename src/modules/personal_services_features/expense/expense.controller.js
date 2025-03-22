@@ -34,20 +34,20 @@ exports.getAllExpenses = async (req, res, next) => {
         const month = req?.query?.month;
         const year = req?.query?.year;
         const days = req?.query?.days;
-        
+
         let expenses = cacheModule.getCachedData(cacheKey);
         if (!expenses) {
             expenses = await expenseService.getAllExpenses();
             cacheModule.setDataToCache(cacheKey, expenses);
         }
-        
+
         if (userId) {
             expenses = await expenseService.getAllExpensesByUserId(
                 userId,
                 expenses
             );
         }
-        
+
         if (days) {
             startDayInMs = Date.now() - Number(days) * 86400000; // 1 day = 86,400,000 milliseconds
             expenses = filterDataByDaysRange(
@@ -127,6 +127,8 @@ exports.deleteExpense = async (req, res, next) => {
             return res
                 .status(404)
                 .json({ success: false, message: "Expense not found" });
+
+        cacheModule.deleteCachedData(cacheKey);
         return res.status(200).json({
             success: true,
             message: "Expense deleted successfully",
