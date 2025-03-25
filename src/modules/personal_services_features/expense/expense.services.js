@@ -32,7 +32,7 @@ exports.createExpenseIntoDB = async (data = Object) => {
 exports.getAllExpenses = async () => {
     try {
         return await prisma.expense.findMany({
-            orderBy: { id: "asc" },
+            orderBy: { date: "desc" },
         });
     } catch (error) {
         throw new Error(error);
@@ -60,7 +60,7 @@ exports.getExpenseByIdFromDB = async (id = Number) => {
 
 exports.updateExpenseInDB = async (id = Number, data = Object) => {
     try {
-        console.log(data.date);
+        const date = generateTimestamp();
         const userGivenDate = convertDateFormat(data.date);
         return prisma.expense.update({
             where: { id },
@@ -69,6 +69,7 @@ exports.updateExpenseInDB = async (id = Number, data = Object) => {
                 amount: parseFloat(data.amount),
                 category: data.category,
                 date: userGivenDate,
+                updated_at: date,
                 user_id: data.user_id,
             },
         });
