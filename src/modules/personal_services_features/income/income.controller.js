@@ -16,7 +16,6 @@ exports.createIncome = async (req, res, next) => {
 
         const income = await incomeService.createIncome(req.body);
 
-        cacheModule.deleteCachedData(cacheKey);
         return res.status(201).json({
             success: true,
             message: "Successfully entered a new income entry",
@@ -34,11 +33,8 @@ exports.getAllIncomes = async (req, res, next) => {
         const year = req?.query?.year;
         const days = req?.query?.days;
 
-        let incomes = cacheModule.getCachedData(cacheKey);
-        if (!incomes) {
-            incomes = await incomeService.getIncomesFromDB();
-            cacheModule.setDataToCache(cacheKey, incomes);
-        }
+        let incomes = await incomeService.getIncomesFromDB();
+        
 
         if (userId) {
             incomes = await incomeService.getAllIncomesByUserId(
@@ -88,7 +84,6 @@ exports.updateIncome = async (req, res, next) => {
             req?.body
         );
 
-        cacheModule.deleteCachedData(cacheKey)
         return res.status(200).json({
             success: true,
             message: `Successfully updated income entry ${incomeId}`,
@@ -112,7 +107,6 @@ exports.deleteIncome = async (req, res, next) => {
             });
         }
 
-        cacheModule.deleteCachedData(cacheKey)
         return res.status(200).json({
             success: true,
             message: `Income deleted with this id: ${incomeId} successfully`,
