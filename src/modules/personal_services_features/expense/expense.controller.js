@@ -17,7 +17,6 @@ exports.createExpense = async (req, res, next) => {
 
         const expense = await expenseService.createExpenseIntoDB(req?.body);
 
-        cacheModule.deleteCachedData(cacheKey);
         return res.status(201).json({
             success: true,
             message: "Successfully entered a new expense entry",
@@ -35,11 +34,7 @@ exports.getAllExpenses = async (req, res, next) => {
         const year = req?.query?.year;
         const days = req?.query?.days;
 
-        let expenses = cacheModule.getCachedData(cacheKey);
-        if (!expenses) {
-            expenses = await expenseService.getAllExpenses();
-            cacheModule.setDataToCache(cacheKey, expenses);
-        }
+        let expenses = await expenseService.getAllExpenses();
 
         if (userId) {
             expenses = await expenseService.getAllExpensesByUserId(
@@ -107,7 +102,6 @@ exports.updateExpense = async (req, res, next) => {
                 .status(404)
                 .json({ success: false, message: "Expense not found" });
 
-        cacheModule.deleteCachedData(cacheKey);
         return res.status(200).json({
             success: true,
             message: "Expense data updated successfully.",
@@ -128,7 +122,6 @@ exports.deleteExpense = async (req, res, next) => {
                 .status(404)
                 .json({ success: false, message: "Expense not found" });
 
-        cacheModule.deleteCachedData(cacheKey);
         return res.status(200).json({
             success: true,
             message: "Expense deleted successfully",
