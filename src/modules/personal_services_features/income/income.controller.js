@@ -106,7 +106,6 @@ exports.deleteIncome = async (req, res, next) => {
         const deleted = await incomeService.deleteIncomeFromDB(incomeId);
 
         if (!deleted) {
-            console.log("Income not found:", incomeId);
             return res.status(404).json({
                 success: false,
                 message: "Income with this id not found",
@@ -120,7 +119,6 @@ exports.deleteIncome = async (req, res, next) => {
             data: deleted,
         });
     } catch (err) {
-        console.error("Error deleting income:", err);
         next(err);
     }
 };
