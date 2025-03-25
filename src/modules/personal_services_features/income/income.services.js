@@ -30,7 +30,7 @@ exports.createIncome = async (data = Object) => {
 
 exports.getIncomesFromDB = async (filters) => {
     try {
-        return await prisma.income.findMany({ orderBy: { id: "asc" } });
+        return await prisma.income.findMany({ orderBy: { date: "desc" } });
     } catch (error) {
         throw new Error(error);
     }
@@ -62,11 +62,13 @@ exports.updateIncomeFromDB = async (id, data) => {
         return await prisma.income.update({
             where: { id },
             data: {
-                title: data.title,
-                amount: parseFloat(data.amount),
-                category: data.category,
+                source: data?.source,
+                amount: parseFloat(data?.amount),
+                category: data?.category,
+                notes: data?.notes,
                 date: userGivenDate,
-                user_id: data.user_id,
+                updated_at: date,
+                user_id: data?.user_id,
             },
         });
     } catch (error) {
