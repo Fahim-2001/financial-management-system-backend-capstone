@@ -1,15 +1,22 @@
+const {
+    deleteCachedData,
+    getCachedData,
+    setDataToCache,
+} = require("../../../utils/cache");
 const savingsService = require("./savingsGoals.services");
+const cacheKey = "savingsGoals";
 
 // Create Savings Goal
 exports.createGoal = async (req, res, next) => {
     try {
-        const { user_id, name, targetAmount, endDate } = req.body;
-        const newGoal = await savingsService.createGoal({ user_id, name, targetAmount, endDate });
+        const data = req.body;
+        const newGoal = await savingsService.createGoalIntoDB(data);
 
+        deleteCachedData(cacheKey);
         res.status(201).json({
             success: true,
             message: "Savings goal created successfully",
-            data: newGoal
+            data: newGoal,
         });
     } catch (err) {
         next(err);
@@ -19,12 +26,31 @@ exports.createGoal = async (req, res, next) => {
 // Get User's Goals
 exports.getGoals = async (req, res, next) => {
     try {
-        const { userId } = req.params;
-        const goals = await savingsService.getGoals(userId);
+        const { user_id } = req.params;
+        const { end_date_order, status } = req?.query;
 
+        let goals = getCachedData(cacheKey);
+
+        if (!goals) {
+            goals = await savingsService.getOneUsersGoalsByNearestEndDate(
+                user_id
+            );
+            setDataToCache(cacheKey, goals);
+        }
+
+        if (end_date_order) {
+            goals = savingsService.sortGoalsByEndDate(goals, end_date_order);
+        }
+
+        if (status) {
+            goals = savingsService.getGoalsByStatus(goals, status);
+        }
+
+        // deleteCachedData(cacheKey);
         res.status(200).json({
             success: true,
-            data: goals
+            total: goals?.length,
+            data: goals,
         });
     } catch (err) {
         next(err);
@@ -42,7 +68,7 @@ exports.updateGoal = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Savings goal updated successfully",
-            data: updatedGoal
+            data: updatedGoal,
         });
     } catch (err) {
         next(err);
@@ -58,7 +84,7 @@ exports.deleteGoal = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: "Savings goal deleted successfully"
+            message: "Savings goal deleted successfully",
         });
     } catch (err) {
         next(err);

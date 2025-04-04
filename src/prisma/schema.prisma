@@ -83,15 +83,15 @@ model Income {
 
 // Prisma Schema for Savings Goal
 model SavingsGoal {
-  id            Int       @id @default(autoincrement())
-  title         String
-  targetAmount  Float
-  currentAmount Float     @default(0)
-  startDate     String  
-  endDate       String?
-  status        String    @default("In Progress") // In Progress, Completed, Canceled
-  created_at String?
-  updated_at String?
+  id             Int     @id @default(autoincrement())
+  title          String
+  target_amount  Float
+  current_amount Float   @default(0)
+  start_date     String
+  end_date       String?
+  status         String  @default("In Progress") // In Progress, Completed, Canceled
+  created_at     String?
+  updated_at     String?
 
   user_id Int?
   User    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)

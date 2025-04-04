@@ -3,7 +3,7 @@ const router = express.Router();
 const savingsController = require("./savingsGoals.controller");
 
 router.post("/", savingsController.createGoal);
-router.get("/:userId", savingsController.getGoals);
+router.get("/:user_id", savingsController.getGoals);
 router.patch("/:id", savingsController.updateGoal);
 router.delete("/:id", savingsController.deleteGoal);
 
