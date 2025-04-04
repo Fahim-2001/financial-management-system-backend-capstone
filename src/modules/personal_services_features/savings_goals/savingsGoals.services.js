@@ -29,10 +29,19 @@ exports.createGoalIntoDB = async (data = Object) => {
 };
 
 // Fetch user goals
-exports.getOneUsersGoalsByNearestEndDate = async (user_id = Number) => {
+exports.getGoalById = async (id = Number) => {
+    try {
+        return await prisma.savingsGoal.findUnique({ where: { id } });
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+exports.getOneUsersGoals = async (user_id = Number) => {
     try {
         let data = await prisma.savingsGoal.findMany({
             where: { user_id: parseInt(user_id) },
+            orderBy: { id: "asc" },
         });
         return data;
     } catch (error) {
@@ -42,9 +51,19 @@ exports.getOneUsersGoalsByNearestEndDate = async (user_id = Number) => {
 
 exports.sortGoalsByEndDate = (goals, order = "asc") => {
     return goals.sort((a, b) => {
-        const dateA = new Date(a.end_date);
-        const dateB = new Date(b.end_date);
-        
+        const dateA = a.end_date ? new Date(a.end_date) : null;
+        const dateB = b.end_date ? new Date(b.end_date) : null;
+
+        // If both dates are null or undefined
+        if (!dateA && !dateB) return 0;
+
+        // If only dateA is null, place it after
+        if (!dateA) return 1;
+
+        // If only dateB is null, place it after
+        if (!dateB) return -1;
+
+        // Normal comparison if both dates exist
         if (order === "asc") {
             return dateA - dateB;
         } else {
@@ -60,21 +79,65 @@ exports.getGoalsByStatus = (goals, status = "In Progress") => {
 };
 
 // Update goal progress
-exports.updateGoal = async (id, currentAmount) => {
+exports.updateGoalCurrentAmount = async (
+    id = Number,
+    user_id = Number,
+    current_amount = Number
+) => {
     try {
         const goal = await prisma.savingsGoal.findUnique({
-            where: { id: parseInt(id) },
+            where: {
+                id: parseInt(id),
+                AND: [ { user_id: parseInt(user_id) }],
+            },
+        });
+
+        if (!goal) throw new Error("Goal not found");
+        
+        const newAmount = goal.current_amount + current_amount;
+        const status =
+            newAmount >= goal.target_amount ? "Completed" : "In Progress";
+
+        return await prisma.savingsGoal.update({
+            where: {
+                id: parseInt(id),
+                AND: [{ user_id: parseInt(user_id) }],
+            },
+            data: { current_amount: newAmount, status: status },
+        });
+    } catch (error) {
+        throw new Error(error);
+    }
+};
+
+exports.updateGoalInfo = async (
+    id = Number,
+    user_id = Number,
+    data = Object
+) => {
+    try {
+        const goal = await prisma.savingsGoal.findUnique({
+            where: {
+                id: parseInt(id),
+                AND: [ { user_id: parseInt(user_id) }],
+            },
         });
 
         if (!goal) throw new Error("Goal not found");
 
-        const newAmount = goal.currentAmount + currentAmount;
-        const status =
-            newAmount >= goal.targetAmount ? "Completed" : "In Progress";
-
+        const date = generateTimestamp();
         return await prisma.savingsGoal.update({
-            where: { id: parseInt(id) },
-            data: { currentAmount: newAmount, status },
+            where: {
+                id: parseInt(id),
+                AND: [ { user_id: parseInt(user_id) }],
+            },
+            data: {
+                title: data?.title,
+                target_amount: data?.target_amount,
+                start_date: data?.start_date,
+                end_date: data?.end_date,
+                updated_at: date,
+            },
         });
     } catch (error) {
         throw new Error(error);

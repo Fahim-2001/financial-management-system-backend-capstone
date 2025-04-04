@@ -22,19 +22,24 @@ exports.createGoal = async (req, res, next) => {
         next(err);
     }
 };
-
 // Get User's Goals
-exports.getGoals = async (req, res, next) => {
+exports.getGoalById = async (req, res, next) => {
     try {
-        const { user_id } = req.params;
-        const { end_date_order, status } = req?.query;
+        const id = req?.params?.id;
+        const goal = await savingsService.getGoalById(parseInt(id));
+        return res.status(200).json(goal);
+    } catch (error) {
+        next(error);
+    }
+};
+exports.getGoalsOfAnUser = async (req, res, next) => {
+    try {
+        const { user_id, end_date_order, status } = req?.query;
 
         let goals = getCachedData(cacheKey);
 
         if (!goals) {
-            goals = await savingsService.getOneUsersGoalsByNearestEndDate(
-                user_id
-            );
+            goals = await savingsService.getOneUsersGoals(user_id);
             setDataToCache(cacheKey, goals);
         }
 
@@ -56,15 +61,30 @@ exports.getGoals = async (req, res, next) => {
         next(err);
     }
 };
-
 // Update Savings Progress
 exports.updateGoal = async (req, res, next) => {
     try {
         const { id } = req.params;
-        const { currentAmount } = req.body;
+        const { user_id, is_amount } = req?.query;
+        const data = req.body;
 
-        const updatedGoal = await savingsService.updateGoal(id, currentAmount);
+        let updatedGoal;
 
+        if (Boolean(parseInt(is_amount))) {
+            updatedGoal = await savingsService.updateGoalCurrentAmount(
+                id,
+                user_id,
+                data?.current_amount
+            );
+        } else {
+            updatedGoal = await savingsService.updateGoalInfo(
+                id,
+                user_id,
+                data
+            );
+        }
+
+        deleteCachedData(cacheKey);
         res.status(200).json({
             success: true,
             message: "Savings goal updated successfully",
@@ -74,7 +94,6 @@ exports.updateGoal = async (req, res, next) => {
         next(err);
     }
 };
-
 // Delete Goal
 exports.deleteGoal = async (req, res, next) => {
     try {
@@ -82,9 +101,10 @@ exports.deleteGoal = async (req, res, next) => {
 
         await savingsService.deleteGoal(id);
 
+        deleteCachedData(cacheKey)
         res.status(200).json({
             success: true,
-            message: "Savings goal deleted successfully",
+            message: `Savings goal ${id} deleted successfully`,
         });
     } catch (err) {
         next(err);
