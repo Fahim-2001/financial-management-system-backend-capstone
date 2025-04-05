@@ -89,6 +89,7 @@ model SavingsGoal {
   current_amount Float   @default(0)
   start_date     String
   end_date       String?
+  goal           String?
   status         String  @default("In Progress") // In Progress, Completed, Canceled
   created_at     String?
   updated_at     String?

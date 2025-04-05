@@ -1,23 +1,19 @@
 const prisma = require("../../../config/prisma.config");
-const {
-    findSmallestAvailableId,
-} = require("../../../utils/findSmallestAvailableId");
 const { generateTimestamp } = require("../../../utils/generativeFunctions");
 
 // Create new goal
 exports.createGoalIntoDB = async (data = Object) => {
     try {
-        const missingId = await findSmallestAvailableId("savingsGoal");
         const date = generateTimestamp();
 
         return await prisma.savingsGoal.create({
             data: {
-                id: missingId,
                 title: data?.title,
                 target_amount: data?.target_amount,
                 current_amount: data?.current_amount,
                 start_date: data?.start_date,
                 end_date: data?.end_date,
+                goal: data?.goal,
                 created_at: date,
                 updated_at: date,
                 user_id: data?.user_id,
@@ -136,6 +132,7 @@ exports.updateGoalInfo = async (
                 target_amount: data?.target_amount,
                 start_date: data?.start_date,
                 end_date: data?.end_date,
+                goal: data?.goal,
                 updated_at: date,
             },
         });

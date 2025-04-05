@@ -70,6 +70,7 @@ exports.updateGoal = async (req, res, next) => {
 
         let updatedGoal;
 
+        // Update amount or info of a savings-goal
         if (Boolean(parseInt(is_amount))) {
             updatedGoal = await savingsService.updateGoalCurrentAmount(
                 id,
