@@ -17,12 +17,13 @@ model User {
   hashed_password     String
   profile_picture_url String?
   user_type           String?
+  joined_at           String?
+  updated_at          String?
   purchased_services  Service[]
   users_expenses      Expense[]
   users_income        Income[]
   users_savings_goals SavingsGoal[]
-  joined_at           String?
-  updated_at          String?
+  user_budgets        Budget[]
 }
 
 // Prisma Schema for Organizations
@@ -96,4 +97,32 @@ model SavingsGoal {
 
   user_id Int?
   User    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model Budget {
+  id Int @id @default(autoincrement())
+
+  title        String
+  total_amount Float
+  remaining    Float
+  type         String // "Monthly" or "Annual"
+  start_date   String
+  end_date     String?
+  created_at   String?
+  updated_at   String?
+  subEvents    SubBudget[]
+
+  user_id Int?
+  User    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model SubBudget {
+  id         Int    @id @default(autoincrement())
+  title      String
+  amount     Float
+  date       String
+  created_at String
+
+  budget_id Int?
+  budget    Budget? @relation(fields: [budget_id], references: [id], onDelete: Cascade)
 }

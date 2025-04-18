@@ -39,6 +39,7 @@ const deleteCachedData = (key = String) => {
 };
 
 module.exports = {
+    nodeCache,
     getCachedData,
     setDataToCache,
     deleteCachedData,
