@@ -15,10 +15,10 @@ exports.createBudget = async (req, res, next) => {
 
 exports.getAllBudgets = async (req, res, next) => {
     try {
-        const { user_id } = req?.query;
-        console.log(user_id)
+        const { user_id, type } = req?.query;
+
         const budgets = await budgetService.getAllBudgetsOfAnUser(
-            parseInt(user_id)
+            parseInt(user_id), type
         );
         return res.status(200).json({
             success: true,
@@ -62,8 +62,10 @@ exports.updateBudget = async (req, res, next) => {
 
 exports.deleteBudget = async (req, res, next) => {
     try {
-        await budgetService.deleteBudget(parseInt(req.params.id));
-        return res.status(204).json({
+        const {id} = req?.params;
+        const deletedBudget = await budgetService.deleteBudget(id);
+        console.log(deletedBudget)
+        return res.status(200).json({
             success: true,
             message: "Successfully deleted budget entry",
         });
@@ -82,7 +84,7 @@ exports.addSubEvent = async (req, res, next) => {
         res.status(201).json({
             success: true,
             message: "Successfully entered a new entry",
-            data: income,
+            data: event,
         });
     } catch (err) {
         next(err);
@@ -92,7 +94,7 @@ exports.addSubEvent = async (req, res, next) => {
 exports.deleteSubEvent = async (req, res, next) => {
     try {
         await budgetService.deleteSubEvent(parseInt(req.params.subId));
-        return res.status(204).json({
+        return res.status(200).json({
             success: true,
             message: "Successfully deleted",
         });

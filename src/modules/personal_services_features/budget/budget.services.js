@@ -5,7 +5,6 @@ const { generateTimestamp } = require("../../../utils/generativeFunctions.js");
 exports.createBudget = async (data) => {
     const key = "all_budgets";
     const date = generateTimestamp();
-    console.log(data);
     const newBudget = await prisma.budget.create({
         data: {
             ...data,
@@ -13,6 +12,7 @@ exports.createBudget = async (data) => {
             created_at: date,
             updated_at: date,
             remaining: parseFloat(data?.total_amount),
+            user_id: parseInt(data?.user_id)
         },
     });
 
@@ -20,15 +20,25 @@ exports.createBudget = async (data) => {
     return newBudget;
 };
 
-exports.getAllBudgetsOfAnUser = async (user_id = Number) => {
+exports.getAllBudgetsOfAnUser = async (user_id = Number, type = String) => {
     const key = "all_budgets";
     if (cache.nodeCache.has(key)) return cache.getCachedData(key);
 
-    const budgets = await prisma.budget.findMany({
-        where: { user_id: user_id },
-        include: { subEvents: true },
-        orderBy: { id: "asc" },
-    });
+    let budgets;
+    if (type) {
+        budgets = await prisma.budget.findMany({
+            where: { user_id: user_id, AND: [{ type: type }] },
+            include: { subEvents: true },
+            orderBy: { id: "asc" },
+        });
+    } else {
+        budgets = await prisma.budget.findMany({
+            where: { user_id: user_id },
+            include: { subEvents: true },
+            orderBy: { id: "asc" },
+        });
+    }
+
     cache.setDataToCache(key, budgets);
     return budgets;
 };
@@ -60,7 +70,7 @@ exports.updateBudget = async (id, data) => {
 
 exports.deleteBudget = async (id) => {
     const deleteBudget = await prisma.budget.delete({
-        where: { id },
+        where: { id: parseInt(id) },
     });
     cache.nodeCache.flushAll();
     return deleteBudget;
@@ -68,9 +78,11 @@ exports.deleteBudget = async (id) => {
 
 // Sub Events
 exports.addSubEvent = async (budgetId, data) => {
+    const date = generateTimestamp();
     const sub = await prisma.subBudget.create({
         data: {
             ...data,
+            created_at: date,
             budget_id: budgetId,
         },
     });
