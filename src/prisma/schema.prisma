@@ -24,6 +24,7 @@ model User {
   users_income        Income[]
   users_savings_goals SavingsGoal[]
   user_budgets        Budget[]
+  user_loans          Loan[]
 }
 
 // Prisma Schema for Organizations
@@ -125,4 +126,58 @@ model SubBudget {
 
   budget_id Int?
   budget    Budget? @relation(fields: [budget_id], references: [id], onDelete: Cascade)
+}
+
+model Loan {
+  id                Int              @id @default(autoincrement())
+  loan_type         String
+  lender_name       String
+  principal_amount  Float
+  current_balance   Float
+  interest_rate     Float
+  start_date        String
+  end_date          String?
+  due_date          String?
+  payment_frequency PaymentFrequency
+  status            LoanStatus
+  notes             String?
+  created_at        String?
+  updated_at        String?
+
+  // Relations
+  payments LoanPayment[]
+  user_id  Int?
+  User     User?         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model LoanPayment {
+  id                Int      @id @default(autoincrement())
+  payment_date      DateTime
+  amount_paid       Float
+  principal_paid    Float
+  interest_paid     Float
+  remaining_balance Float
+  notes             String?
+  createdAt         String?
+
+  // Relations
+  loan_id Int?
+  Loan    Loan? @relation(fields: [loan_id], references: [id], onDelete: Cascade)
+
+  @@index([loan_id])
+}
+
+// ENUMs
+enum PaymentFrequency {
+  Monthly
+  BiWeekly
+  Custom
+}
+
+enum LoanStatus {
+  Active
+  PaidOff
+  Default
 }
