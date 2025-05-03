@@ -1,10 +1,5 @@
-const {
-    deleteCachedData,
-    getCachedData,
-    setDataToCache,
-} = require("../../../utils/cache");
 const savingsService = require("./savingsGoals.services");
-const cacheKey = "savingsGoals";
+
 
 // Create Savings Goal
 exports.createGoal = async (req, res, next) => {
@@ -12,7 +7,6 @@ exports.createGoal = async (req, res, next) => {
         const data = req.body;
         const newGoal = await savingsService.createGoalIntoDB(data);
 
-        deleteCachedData(cacheKey);
         res.status(201).json({
             success: true,
             message: "Savings goal created successfully",
@@ -36,12 +30,7 @@ exports.getGoalsOfAnUser = async (req, res, next) => {
     try {
         const { user_id, end_date_order, status } = req?.query;
 
-        let goals = getCachedData(cacheKey);
-
-        if (!goals) {
-            goals = await savingsService.getOneUsersGoals(user_id);
-            setDataToCache(cacheKey, goals);
-        }
+        let goals = await savingsService.getOneUsersGoals(user_id);
 
         if (end_date_order) {
             goals = savingsService.sortGoalsByEndDate(goals, end_date_order);
@@ -85,7 +74,6 @@ exports.updateGoal = async (req, res, next) => {
             );
         }
 
-        deleteCachedData(cacheKey);
         res.status(200).json({
             success: true,
             message: "Savings goal updated successfully",
@@ -102,7 +90,6 @@ exports.deleteGoal = async (req, res, next) => {
 
         await savingsService.deleteGoal(id);
 
-        deleteCachedData(cacheKey)
         res.status(200).json({
             success: true,
             message: `Savings goal ${id} deleted successfully`,

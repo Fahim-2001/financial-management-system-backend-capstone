@@ -101,8 +101,21 @@ model SavingsGoal {
   created_at     String?
   updated_at     String?
 
-  user_id Int?
-  User    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id      Int?
+  User         User?       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  goal_entries GoalEntry[]
+}
+
+model GoalEntry {
+  id             Int     @id @default(autoincrement())
+  amount         Float
+  current_amount Float   @default(0)
+  entry_date     String
+  created_at     String?
+  updated_at     String?
+
+  goal_id Int?
+  Goal    SavingsGoal? @relation(fields: [goal_id], references: [id], onDelete: Cascade)
 }
 
 model Budget {
@@ -111,7 +124,7 @@ model Budget {
   title        String
   total_amount Float
   remaining    Float
-  type         String // "Monthly" or "Annual"
+  type         BudgetType // "Monthly" or "Annual"
   start_date   String
   end_date     String?
   created_at   String?
@@ -120,6 +133,11 @@ model Budget {
 
   user_id Int?
   User    User? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+enum BudgetType {
+  Monthly
+  Annually
 }
 
 model SubBudget {

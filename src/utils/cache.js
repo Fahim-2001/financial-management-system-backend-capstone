@@ -1,5 +1,5 @@
 const NodeCache = require("node-cache");
-const nodeCache = new NodeCache({ stdTTL: 3600, checkperiod: 60 });
+const nodeCache = new NodeCache({ stdTTL: 300, checkperiod: 60 });
 
 const getCachedData = (key = String) => {
     try {

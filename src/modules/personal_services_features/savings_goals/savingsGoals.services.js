@@ -9,14 +9,14 @@ exports.createGoalIntoDB = async (data = Object) => {
         return await prisma.savingsGoal.create({
             data: {
                 title: data?.title,
-                target_amount: data?.target_amount,
-                current_amount: data?.current_amount,
+                target_amount: parseFloat(data?.target_amount),
+                current_amount: parseFloat(data?.current_amount),
                 start_date: data?.start_date,
                 end_date: data?.end_date,
                 goal: data?.goal,
                 created_at: date,
                 updated_at: date,
-                user_id: data?.user_id,
+                user_id: parseInt(data?.user_id),
             },
         });
     } catch (error) {
@@ -84,12 +84,12 @@ exports.updateGoalCurrentAmount = async (
         const goal = await prisma.savingsGoal.findUnique({
             where: {
                 id: parseInt(id),
-                AND: [ { user_id: parseInt(user_id) }],
+                AND: [{ user_id: parseInt(user_id) }],
             },
         });
 
         if (!goal) throw new Error("Goal not found");
-        
+
         const newAmount = goal.current_amount + current_amount;
         const status =
             newAmount >= goal.target_amount ? "Completed" : "In Progress";
@@ -115,17 +115,17 @@ exports.updateGoalInfo = async (
         const goal = await prisma.savingsGoal.findUnique({
             where: {
                 id: parseInt(id),
-                AND: [ { user_id: parseInt(user_id) }],
+                AND: [{ user_id: parseInt(user_id) }],
             },
         });
 
         if (!goal) throw new Error("Goal not found");
-
+        
         const date = generateTimestamp();
         return await prisma.savingsGoal.update({
             where: {
                 id: parseInt(id),
-                AND: [ { user_id: parseInt(user_id) }],
+                AND: [{ user_id: parseInt(user_id) }],
             },
             data: {
                 title: data?.title,
