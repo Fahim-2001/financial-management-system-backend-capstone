@@ -5,7 +5,7 @@ const {
 } = require("../../utils/cache");
 const serviceService = require("./fin_services.services");
 const cacheKey = "services";
-// Controller to get all services
+
 const getAllServices = async (req, res, next) => {
     try {
         let allServices = getCachedData(cacheKey);
@@ -24,7 +24,6 @@ const getAllServices = async (req, res, next) => {
     }
 };
 
-// Controller to get a service by ID
 const getServiceById = async (req, res, next) => {
     try {
         const { id } = req?.params;
@@ -41,7 +40,6 @@ const getServiceById = async (req, res, next) => {
     }
 };
 
-// Controller to create a new service
 const createService = async (req, res, next) => {
     try {
         const serviceData = req?.body;
@@ -58,7 +56,7 @@ const createService = async (req, res, next) => {
     }
 };
 
-// Controller to update an existing service
+
 const updateServiceById = async (req, res, next) => {
     try {
         const { id } = req?.params;
@@ -81,7 +79,7 @@ const updateServiceById = async (req, res, next) => {
     }
 };
 
-// Controller to delete a service
+
 const deleteService = async (req, res, next) => {
     try {
         const { id } = req?.params;
