@@ -21,7 +21,7 @@ exports.createExpenseIntoDB = async (data = Object) => {
                 date: userGivenDate,
                 created_at: date,
                 updated_at: date,
-                user_id: data.user_id,
+                user_id: parseInt(data.user_id),
             },
         });
     } catch (error) {
