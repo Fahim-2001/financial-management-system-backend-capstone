@@ -42,17 +42,22 @@ model Organization {
 
 // Prisma Schema for Services
 model Service {
-  id           Int     @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   title        String
   price        Int
   type         String
   facilities   String?
-  session_type String
+  session_type SessionType
   created_at   String?
   updated_at   String?
 
   user   User? @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int?
+}
+
+enum SessionType {
+  Monthly
+  Yearly
 }
 
 // Prisma Schema for Expenses
