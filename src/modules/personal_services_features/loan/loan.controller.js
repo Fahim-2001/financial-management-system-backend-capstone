@@ -1,9 +1,9 @@
 // loan.controller.js
 const loanService = require("./loan.services");
 
-const createLoan = async (req, res, next) => {
+exports.createLoan = async (req, res, next) => {
     try {
-        const loan = await loanService.createLoan(req.body);
+        const loan = await loanService.createLoanInDB(req.body);
         return res.status(201).json({
             success: true,
             message: "Sucessfully added new loan entry",
@@ -14,7 +14,7 @@ const createLoan = async (req, res, next) => {
     }
 };
 
-const getAllLoans = async (req, res, next) => {
+exports.getAllLoans = async (req, res, next) => {
     try {
         const { user_id } = req.params;
         const loans = await loanService.getAllLoans(parseInt(user_id));
@@ -26,7 +26,7 @@ const getAllLoans = async (req, res, next) => {
     }
 };
 
-const getLoanById = async (req, res, next) => {
+exports.getLoanById = async (req, res, next) => {
     try {
         const { id } = req.params;
         const loan = await loanService.getLoanById(parseInt(id));
@@ -36,7 +36,7 @@ const getLoanById = async (req, res, next) => {
     }
 };
 
-const makePayment = async (req, res, next) => {
+exports.makePayment = async (req, res, next) => {
     try {
         const { loan_id } = req.params;
         const data = req.body;
@@ -53,7 +53,7 @@ const makePayment = async (req, res, next) => {
     }
 };
 
-const deleteLoan = async (req, res, next) => {
+exports.deleteLoan = async (req, res, next) => {
     try {
         const { loan_id } = req.params;
         await loanService.deleteLoan(parseInt(loan_id));
@@ -61,12 +61,4 @@ const deleteLoan = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-};
-
-module.exports = {
-    createLoan,
-    getAllLoans,
-    getLoanById,
-    makePayment,
-    deleteLoan,
 };

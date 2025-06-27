@@ -1,3 +1,4 @@
+const { parse } = require("dotenv");
 const prisma = require("../../../config/prisma.config");
 const cache = require("../../../utils/cache");
 const {
@@ -11,16 +12,20 @@ const {
 
 const LOAN_CACHE_KEY = "loans_user_";
 
-const createLoan = async (data) => {
+exports.createLoanInDB = async (data) => {
     const date = generateTimestamp();
-    const missingId = findSmallestAvailableId("loan");
+    // const missingId = findSmallestAvailableId("loan");
 
     const loan = await prisma.loan.create({
         data: {
             // id: missingId,
             ...data,
             principal_amount: parseFloat(data?.principal_amount),
-            current_balance: parseFloat(data?.current_balance),
+            total_paid: parseFloat(data?.total_paid),
+            total_amount_with_interest: parseFloat(
+                data?.principal_amount +
+                    data?.principal_amount * (data?.interest_rate / 100)
+            ),
             interest_rate: parseFloat(data?.interest_rate),
             created_at: date,
             updated_at: date,
@@ -34,11 +39,11 @@ const createLoan = async (data) => {
     return loan;
 };
 
-const getAllLoans = async (user_id) => {
+exports.getAllLoans = async (user_id) => {
     const cacheKey = `${LOAN_CACHE_KEY}${user_id}`;
     let cachedLoans = cache.nodeCache.get(cacheKey);
-
-    if (cachedLoans) {
+    
+    if (cachedLoans!== undefined) {
         console.log("Serving loans from cache");
         return cachedLoans;
     }
@@ -48,17 +53,18 @@ const getAllLoans = async (user_id) => {
         include: { payments: true },
     });
 
+    console.log(cachedLoans, loans);
     cache.nodeCache.set(cacheKey, loans);
     return loans;
 };
 
-const getLoanById = async (loan_id) => {
+exports.getLoanById = async (loan_id) => {
     return await prisma.loan.findUnique({
         where: { id: loan_id },
     });
 };
 
-const makePayment = async (loan_id, data) => {
+exports.makePayment = async (loan_id, data) => {
     const loan = await prisma.loan.findUnique({
         where: { id: loan_id },
     });
@@ -94,7 +100,7 @@ const makePayment = async (loan_id, data) => {
     return updatedLoan;
 };
 
-const deleteLoan = async (loan_id) => {
+exports.deleteLoan = async (loan_id) => {
     console.log(loan_id);
     const loan = await prisma.loan.findUnique({
         where: { id: loan_id },
@@ -110,12 +116,4 @@ const deleteLoan = async (loan_id) => {
     cache.deleteItemFromCache(cacheKey, loan_id);
 
     return loan;
-};
-
-module.exports = {
-    createLoan,
-    getAllLoans,
-    getLoanById,
-    makePayment,
-    deleteLoan,
 };

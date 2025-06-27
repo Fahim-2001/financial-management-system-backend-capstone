@@ -17,6 +17,7 @@ const PersonalIncomes = require("./modules/personal_services_features/income/inc
 const PersonalSavingsGoals = require("./modules/personal_services_features/savings_goals/savingsGoals.route");
 const PersonalBudgets = require("./modules/personal_services_features/budget/budget.route");
 const PersonalLoans = require("./modules/personal_services_features/loan/loan.route");
+const PersonalInvestments = require("./modules/personal_services_features/investment/investment.routes");
 // CORS Options - Defines the allowed to origin to accept requests.
 var corsOptions = {
     origin: "*",
@@ -48,6 +49,7 @@ app.use("/api/v1/personal/incomes", PersonalIncomes);
 app.use("/api/v1/personal/savings-goals", PersonalSavingsGoals);
 app.use("/api/v1/personal/budgets", PersonalBudgets);
 app.use("/api/v1/personal/loans", PersonalLoans);
+app.use("/api/v1/personal/investments", PersonalInvestments);
 app.use(errorHandler);
 
 // ROOT ROUTE
