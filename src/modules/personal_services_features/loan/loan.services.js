@@ -1,119 +1,207 @@
-const { parse } = require("dotenv");
 const prisma = require("../../../config/prisma.config");
 const cache = require("../../../utils/cache");
-const {
-    findSmallestAvailableId,
-} = require("../../../utils/findSmallestAvailableId");
 const { generateTimestamp } = require("../../../utils/generativeFunctions");
 const {
     calculateRemainingBalance,
     calculateNextDueDate,
+    calculateYearsDifference,
 } = require("./loans.utils");
 
 const LOAN_CACHE_KEY = "loans_user_";
 
-exports.createLoanInDB = async (data) => {
-    const date = generateTimestamp();
-    // const missingId = findSmallestAvailableId("loan");
+class LoanService {
+    static async createLoanInDB(data) {
+        const date = generateTimestamp();
+        // const missingId = findSmallestAvailableId("loan");
+        const yearsDifference = calculateYearsDifference(
+            data?.start_date,
+            data?.end_date
+        );
 
-    const loan = await prisma.loan.create({
-        data: {
-            // id: missingId,
-            ...data,
-            principal_amount: parseFloat(data?.principal_amount),
-            total_paid: parseFloat(data?.total_paid),
-            total_amount_with_interest: parseFloat(
-                data?.principal_amount +
-                    data?.principal_amount * (data?.interest_rate / 100)
-            ),
-            interest_rate: parseFloat(data?.interest_rate),
-            created_at: date,
-            updated_at: date,
-            user_id: parseInt(data?.user_id),
-        },
-    });
+        const total_payable =
+            yearsDifference < 1
+                ? parseFloat(data?.principal_amount) +
+                  (parseFloat(data?.principal_amount) *
+                      parseFloat(data?.interest_rate)) /
+                      100
+                : parseFloat(data?.principal_amount) +
+                  ((parseFloat(data?.principal_amount) *
+                      parseFloat(data?.interest_rate)) /
+                      100) *
+                      yearsDifference;
 
-    const cacheKey = `${LOAN_CACHE_KEY}${loan.user_id}`;
-    cache.addItemToCache(cacheKey, loan);
+        const due = (total_payable - parseFloat(data?.total_paid)).toFixed(3);
 
-    return loan;
-};
+        const loan = await prisma.loan.create({
+            data: {
+                // id: missingId,
+                ...data,
+                principal_amount: parseFloat(data?.principal_amount),
+                total_paid: parseFloat(data?.total_paid),
+                total_payable: total_payable,
+                due: parseFloat(due),
+                interest_rate: parseFloat(data?.interest_rate),
+                number_of_payments: parseInt(data?.number_of_payments),
+                remaining_payments: parseInt(data?.remaining_payments),
+                created_at: date,
+                updated_at: date,
+                user_id: parseInt(data?.user_id),
+            },
+        });
 
-exports.getAllLoans = async (user_id) => {
-    const cacheKey = `${LOAN_CACHE_KEY}${user_id}`;
-    let cachedLoans = cache.nodeCache.get(cacheKey);
-    
-    if (cachedLoans!== undefined) {
-        console.log("Serving loans from cache");
-        return cachedLoans;
+        const cacheKey = `${LOAN_CACHE_KEY}${loan.user_id}`;
+        cache.addItemToCache(cacheKey, loan);
+
+        return loan;
     }
 
-    const loans = await prisma.loan.findMany({
-        where: { user_id },
-        include: { payments: true },
-    });
+    static async getAllLoans(user_id) {
+        const cacheKey = `${LOAN_CACHE_KEY}${user_id}`;
+        let cachedLoans = cache.nodeCache.get(cacheKey);
 
-    console.log(cachedLoans, loans);
-    cache.nodeCache.set(cacheKey, loans);
-    return loans;
-};
+        if (cachedLoans !== undefined) {
+            console.log("Serving loans from cache");
+            return cachedLoans;
+        }
 
-exports.getLoanById = async (loan_id) => {
-    return await prisma.loan.findUnique({
-        where: { id: loan_id },
-    });
-};
+        const loans = await prisma.loan.findMany({
+            where: { user_id },
+            include: { payments: true },
+        });
 
-exports.makePayment = async (loan_id, data) => {
-    const loan = await prisma.loan.findUnique({
-        where: { id: loan_id },
-    });
+        cache.nodeCache.set(cacheKey, loans);
+        return loans;
+    }
 
-    if (!loan) throw new Error("Loan not found");
+    static async getLoanById(loan_id) {
+        return await prisma.loan.findUnique({
+            where: { id: loan_id },
+            include: { payments: true },
+        });
+    }
 
-    // Interest Calculation
-    const interest_paid = data.amount_paid * (loan.interest_rate / 100);
-    const principal_paid = data.amount_paid - interest_paid;
+    static async makePayment(loan_id, data) {
+        
+        const loan = await prisma.loan.findUnique({
+            where: { id: loan_id },
+        });
 
-    const remainingBalance = calculateRemainingBalance(
-        loan.principal_amount,
-        principal_paid
-    );
+        if (!loan) throw new Error("Loan not found");
 
-    const updatedLoan = await prisma.loan.update({
-        where: { id: loan_id },
-        data: {
-            current_balance: parseFloat(remainingBalance),
-            status: remainingBalance === 0 ? "Paid" : "Active",
-            due_date: calculateNextDueDate(
-                loan.due_date,
-                loan.payment_frequency
-            ),
-        },
-    });
+        // Interest Calculation
+        const interest_paid = (
+            loan?.payment_frequency == "Monthly"
+                ? parseFloat(data.amount_paid) *
+                  (parseFloat(loan.interest_rate) / 100 / 12)
+                : loan?.payment_frequency == "BiWeekly"
+                ? parseFloat(data.amount_paid) *
+                  (parseFloat(loan.interest_rate) / 100 / 26)
+                : parseFloat(data.amount_paid) *
+                  (parseFloat(loan.interest_rate) / 100 / 52)
+        ).toFixed(3);
 
-    await prisma.loanPayment.create({ data: {} });
+        const principal_paid = (
+            parseFloat(data.amount_paid) - parseFloat(interest_paid)
+        ).toFixed(3);
 
-    const cacheKey = `${LOAN_CACHE_KEY}${loan.user_id}`;
-    cache.updateItemInCache(cacheKey, updatedLoan);
+        const remainingBalance = calculateRemainingBalance(
+            parseFloat(loan.total_payable),
+            parseFloat(loan.total_paid) + parseFloat(data.amount_paid)
+        );
 
-    return updatedLoan;
-};
+        const updatedLoan = await prisma.loan.update({
+            where: { id: loan_id },
+            data: {
+                total_paid:
+                    parseFloat(loan.total_paid) + parseFloat(data.amount_paid),
+                due: parseFloat(remainingBalance),
+                status: remainingBalance === 0 ? "Paid" : "Active",
+                next_payment_date: calculateNextDueDate(
+                    loan.next_payment_date,
+                    loan.payment_frequency
+                ),
+                remaining_payments: parseInt(loan.remaining_payments) - 1,
+            },
+        });
 
-exports.deleteLoan = async (loan_id) => {
-    console.log(loan_id);
-    const loan = await prisma.loan.findUnique({
-        where: { id: loan_id },
-    });
+        console.log("Updated Loan:", updatedLoan);
 
-    if (!loan) throw new Error("Loan not found");
+        await prisma.loanPayment.create({
+            data: {
+                ...data,
+                amount_paid: parseFloat(data.amount_paid),
+                interest_paid: parseFloat(interest_paid),
+                principal_paid: parseFloat(principal_paid),
+                remaining_balance: parseFloat(remainingBalance),
+                notes: data.notes || "",
+                payment_date: data.payment_date || generateTimestamp(),
+                created_at: generateTimestamp(),
+            },
+        });
 
-    await prisma.loan.delete({
-        where: { id: loan_id },
-    });
+        const cacheKey = `${LOAN_CACHE_KEY}${loan.user_id}`;
+        cache.updateItemInCache(cacheKey, updatedLoan);
 
-    const cacheKey = `${LOAN_CACHE_KEY}${loan.user_id}`;
-    cache.deleteItemFromCache(cacheKey, loan_id);
+        return updatedLoan;
+    }
 
-    return loan;
-};
+    static async deleteLoan(loan_id) {
+        console.log(loan_id);
+        const loan = await prisma.loan.findUnique({
+            where: { id: loan_id },
+        });
+
+        if (!loan) throw new Error("Loan not found");
+
+        await prisma.loan.delete({
+            where: { id: loan_id },
+        });
+
+        const cacheKey = `${LOAN_CACHE_KEY}${loan.user_id}`;
+        cache.deleteItemFromCache(cacheKey, loan_id);
+
+        return loan;
+    }
+
+    static async deleteLoanPayment(loan_id, payment_id) {
+        const currentDateTime = generateTimestamp();
+        const payment = await prisma.loanPayment.findUnique({
+            where: { id: payment_id },
+        });
+
+        if (!payment) throw new Error("Payment not found");
+        if (payment.loan_id !== loan_id)
+            throw new Error("Payment does not belong to the specified loan");
+
+        const loan = await prisma.loan.findUnique({ where: { id: loan_id } });
+        if (!loan) throw new Error("Loan not found");
+
+        // Reverse the payment effect (e.g., subtract amount_paid from total_paid)
+        const updatedTotalPaid = loan.total_paid - payment.amount_paid;
+        const remainingBalance = calculateRemainingBalance(
+            loan.principal_amount,
+            loan.total_paid - payment.amount_paid
+        );
+
+        const updatedLoan = await prisma.loan.update({
+            where: { id: loan_id },
+            data: {
+                total_paid: updatedTotalPaid,
+                current_balance: parseFloat(remainingBalance),
+                status: remainingBalance === 0 ? "PaidOff" : "Active",
+                updated_at: currentDateTime,
+            },
+        });
+
+        await prisma.loanPayment.delete({
+            where: { id: payment_id },
+        });
+
+        const cacheKey = `${LOAN_CACHE_KEY}${loan.user_id}`;
+        cache.updateItemInCache(cacheKey, updatedLoan);
+
+        return { message: "Loan payment deleted successfully", updatedLoan };
+    }
+}
+
+module.exports = LoanService;

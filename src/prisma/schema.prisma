@@ -25,7 +25,7 @@ model User {
   users_savings_goals SavingsGoal[]
   user_budgets        Budget[]
   user_loans          Loan[]
-  user_investments Investment[]
+  user_investments    Investment[]
 }
 
 // Prisma Schema for Organizations
@@ -153,21 +153,24 @@ model SubBudget {
 }
 
 model Loan {
-  id                         Int              @id @default(autoincrement())
-  loan_type                  String
-  lender_name                String
-  principal_amount           Float
-  total_amount_with_interest Float
-  total_paid                 Float
-  interest_rate              Float
-  start_date                 String
-  end_date                   String?
-  due_date                   String?
-  payment_frequency          PaymentFrequency
-  status                     LoanStatus
-  notes                      String?
-  created_at                 String?
-  updated_at                 String?
+  id                 Int              @id @default(autoincrement())
+  loan_type          String
+  lender_name        String
+  principal_amount   Float
+  total_payable      Float
+  total_paid         Float
+  due                Float
+  interest_rate      Float
+  number_of_payments Int
+  remaining_payments Int
+  start_date         String
+  end_date           String?
+  next_payment_date  String?
+  payment_frequency  PaymentFrequency
+  status             LoanStatus
+  notes              String?
+  created_at         String?
+  updated_at         String?
 
   // Relations
   payments LoanPayment[]
@@ -183,7 +186,7 @@ model LoanPayment {
   interest_paid     Float
   remaining_balance Float
   notes             String?
-  createdAt         String?
+  created_at         String?
 
   // Relations
   loan_id Int?
@@ -192,9 +195,9 @@ model LoanPayment {
 
 // ENUMs
 enum PaymentFrequency {
-  Monthly
+  Weekly
   BiWeekly
-  Custom
+  Monthly
 }
 
 enum LoanStatus {
@@ -204,24 +207,25 @@ enum LoanStatus {
 }
 
 model Investment {
-  id              Int            @id @default(autoincrement())
-  title           String         // e.g., "Dhaka Stock Portfolio", "Mutual Fund A"
+  id              Int              @id @default(autoincrement())
+  title           String // e.g., "Dhaka Stock Portfolio", "Mutual Fund A"
   investment_type InvestmentType // Enum for type (Stock, Mutual Fund, Fixed Deposit, Bond)
-  institution     String?        // e.g., "ICB", "Dhaka Stock Exchange", "bKash Savings"
-  initial_amount  Float          // Initial investment amount in BDT
-  current_value   Float          // Current market value in BDT
-  start_date      String         // e.g., "2025-01-01 09:00:00"
-  end_date        String?        // Optional end date for matured investments
+  institution     String? // e.g., "ICB", "Dhaka Stock Exchange", "bKash Savings"
+  initial_amount  Float // Initial investment amount in BDT
+  current_value   Float // Current market value in BDT
+  start_date      String // e.g., "2025-01-01 09:00:00"
+  end_date        String? // Optional end date for matured investments
   status          InvestmentStatus // Enum for status (Active, Matured, Closed)
   notes           String?
   created_at      String?
   updated_at      String?
 
   // Relations
-  transactions    InvestmentTransaction[]
-  user_id         Int?
-  User            User?          @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  performance     InvestmentPerformance[]
+  transactions InvestmentTransaction[]
+  user_id      Int?
+  User         User?                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  performance  InvestmentPerformance[]
+
   @@index([user_id])
 }
 
@@ -239,16 +243,16 @@ enum InvestmentStatus {
 }
 
 model InvestmentTransaction {
-  id              Int      @id @default(autoincrement())
-  investment_id   Int
+  id               Int             @id @default(autoincrement())
+  investment_id    Int
   transaction_type TransactionType // Enum for Buy, Sell, Dividend, Interest
-  amount          Float    // Transaction amount in BDT
-  date            String   // e.g., "2025-01-01 09:00:00"
-  notes           String?
-  created_at      String?
-  updated_at      String?
+  amount           Float // Transaction amount in BDT
+  date             String // e.g., "2025-01-01 09:00:00"
+  notes            String?
+  created_at       String?
+  updated_at       String?
 
-  Investment      Investment @relation(fields: [investment_id], references: [id], onDelete: Cascade)
+  Investment Investment @relation(fields: [investment_id], references: [id], onDelete: Cascade)
 
   @@index([investment_id])
 }
@@ -261,16 +265,16 @@ enum TransactionType {
 }
 
 model InvestmentPerformance {
-  id              Int      @id @default(autoincrement())
-  investment_id   Int
-  date            String   // e.g., "2025-01-01 00:00:00"
-  return_rate     Float    // Percentage return for the period
-  value           Float    // Value at the end of the period in BDT
-  notes           String?
-  created_at      String?
-  updated_at      String?
+  id            Int     @id @default(autoincrement())
+  investment_id Int
+  date          String // e.g., "2025-01-01 00:00:00"
+  return_rate   Float // Percentage return for the period
+  value         Float // Value at the end of the period in BDT
+  notes         String?
+  created_at    String?
+  updated_at    String?
 
-  Investment      Investment @relation(fields: [investment_id], references: [id], onDelete: Cascade)
+  Investment Investment @relation(fields: [investment_id], references: [id], onDelete: Cascade)
 
   @@index([investment_id])
 }
