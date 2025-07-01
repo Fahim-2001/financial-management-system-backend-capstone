@@ -66,6 +66,7 @@ class LoanService {
 
         const loans = await prisma.loan.findMany({
             where: { user_id },
+            orderBy: { id: "asc" },
             include: { payments: true },
         });
 
@@ -81,7 +82,6 @@ class LoanService {
     }
 
     static async makePayment(loan_id, data) {
-        
         const loan = await prisma.loan.findUnique({
             where: { id: loan_id },
         });
@@ -124,11 +124,10 @@ class LoanService {
             },
         });
 
-        console.log("Updated Loan:", updatedLoan);
-
         await prisma.loanPayment.create({
             data: {
                 ...data,
+                loan_id: parseInt(loan_id),
                 amount_paid: parseFloat(data.amount_paid),
                 interest_paid: parseFloat(interest_paid),
                 principal_paid: parseFloat(principal_paid),
