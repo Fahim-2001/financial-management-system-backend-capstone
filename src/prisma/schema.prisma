@@ -186,7 +186,7 @@ model LoanPayment {
   interest_paid     Float
   remaining_balance Float
   notes             String?
-  created_at         String?
+  created_at        String?
 
   // Relations
   loan_id Int?
