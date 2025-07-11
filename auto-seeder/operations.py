@@ -39,7 +39,7 @@ def delete_entry(api_url, payload):
 def create_set_entry(api_url, extension, payload, headers):
     for pl in payload:
         # api_url = f"{api_url}/{pl['loan_id']}/{extension}"
-        response = requests.post(f"{api_url}/{pl['loan_id']}/{extension}", json=pl, headers=headers)
+        response = requests.post(f"{api_url}/{pl['goal_id']}/{extension}", json=pl, headers=headers)
         if response.status_code in [200, 201]:
             print("Success:", response.json())
         else:

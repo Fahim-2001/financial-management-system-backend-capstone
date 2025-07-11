@@ -1,18 +1,18 @@
 const express = require("express");
 const router = express.Router();
-const savingsController = require("./savingsGoals.controller");
-const goalEntryController = require("./goal_entry/goalEntry.controller");
+const SavingsGoalController = require("./savingsGoals.controller");
+const GoalEntryController = require("./goal_entry/goalEntry.controller");
 
 router
-    .post("/", savingsController.createGoal)
-    .get("/", savingsController.getGoalsOfAnUser);
-router.get("/:id", savingsController.getGoalById);
-router.put("/:id", savingsController.updateGoal);
-router.delete("/:id", savingsController.deleteGoal);
-router.post("/goal-entry/:goal_id", goalEntryController.createGoalEntry);
-router.get("/goal-entry", goalEntryController.getAllGoalEntries);
-router.get("/goal-entry/:id", goalEntryController.getGoalEntryById);
-router.put("/goal-entry/:id", goalEntryController.updateGoalEntry);
-router.delete("/goal-entry/:id", goalEntryController.deleteGoalEntry);
+    .post("/", SavingsGoalController.createGoal)
+    .get("/user/:id", SavingsGoalController.getGoalsOfAnUser);
+router.get("/:id", SavingsGoalController.getGoalById);
+router.put("/:id", SavingsGoalController.updateGoal);
+router.delete("/:id", SavingsGoalController.deleteGoal);
+router.post("/:goal_id/goal-entry", GoalEntryController.createGoalEntry);
+router.get("/:goal_id/goal-entry", GoalEntryController.getAllGoalEntries);
+router.get("/:goal_id/goal-entry/:id", GoalEntryController.getGoalEntryById);
+router.put("/:goal_id/goal-entry/:id", GoalEntryController.updateGoalEntry);
+router.delete("/:goal_id/goal-entry/:id", GoalEntryController.deleteGoalEntry);
 
 module.exports = router;
