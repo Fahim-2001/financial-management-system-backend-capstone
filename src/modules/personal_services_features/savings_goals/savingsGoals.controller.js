@@ -32,7 +32,7 @@ class SavingsGoalController {
             const { end_date_order, status } = req?.query;
 
             let goals = await SavingsGoalService.getOneUsersGoals(parseInt(id));
-            console.log(goals);
+
             if (end_date_order) {
                 goals = SavingsGoalService.sortGoalsByEndDate(
                     goals,
