@@ -15,10 +15,10 @@ exports.createBudget = async (req, res, next) => {
 
 exports.getAllBudgets = async (req, res, next) => {
     try {
-        const { user_id, type } = req?.query;
+        const { id } = req?.params;
 
         const budgets = await budgetService.getAllBudgetsOfAnUser(
-            parseInt(user_id), type
+            parseInt(id)
         );
         return res.status(200).json({
             success: true,

@@ -20,24 +20,16 @@ exports.createBudget = async (data) => {
     return newBudget;
 };
 
-exports.getAllBudgetsOfAnUser = async (user_id = Number, type = String) => {
+exports.getAllBudgetsOfAnUser = async (user_id = Number) => {
     const key = "all_budgets";
     if (cache.nodeCache.has(key)) return cache.getCachedData(key);
 
-    let budgets;
-    if (type) {
-        budgets = await prisma.budget.findMany({
-            where: { user_id: user_id, AND: [{ type: type }] },
-            include: { subEvents: true },
-            orderBy: { id: "asc" },
-        });
-    } else {
-        budgets = await prisma.budget.findMany({
+    let budgets = await prisma.budget.findMany({
             where: { user_id: user_id },
             include: { subEvents: true },
             orderBy: { id: "asc" },
-        });
-    }
+        });;
+    
 
     cache.setDataToCache(key, budgets);
     return budgets;
