@@ -9,6 +9,7 @@ budgetRouter.put("/:id", budgetController.updateBudget);
 budgetRouter.delete("/:id", budgetController.deleteBudget);
 
 budgetRouter.post("/:id/sub-events", budgetController.addSubEvent);
+budgetRouter.get("/:id/sub-events", budgetController.getAllSubBudgets);
 budgetRouter.delete("/sub-events/:subId", budgetController.deleteSubEvent);
 
 module.exports = budgetRouter;

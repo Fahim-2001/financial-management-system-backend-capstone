@@ -1,23 +1,31 @@
 const prisma = require("../../../config/prisma.config.js");
 const cache = require("../../../utils/cache.js");
 const { generateTimestamp } = require("../../../utils/generativeFunctions.js");
+const { convertDateFormat } = require("../../../utils/timestampToMS.js");
 
 exports.createBudget = async (data) => {
-    const key = "all_budgets";
-    const date = generateTimestamp();
-    const newBudget = await prisma.budget.create({
-        data: {
-            ...data,
-            total_amount: parseFloat(data?.total_amount),
-            created_at: date,
-            updated_at: date,
-            remaining: parseFloat(data?.total_amount),
-            user_id: parseInt(data?.user_id)
-        },
-    });
+  const key = "all_budgets";
+  const date = generateTimestamp();
 
-    cache.deleteCachedData(key);
-    return newBudget;
+  // Log incoming data for debugging
+  console.log('Creating budget with data:', data);
+
+  const newBudget = await prisma.budget.create({
+    data: {
+      title: data?.title || '',
+      type: data?.type || 'Monthly', // Default to 'Monthly' if not provided
+      start_date: convertDateFormat(data?.start_date) || date,
+      end_date: convertDateFormat(data?.end_date), // Use null if invalid or missing
+      total_amount: parseFloat(data?.total_amount) || 0,
+      created_at: date,
+      updated_at: date,
+      remaining: parseFloat(data?.total_amount) || 0,
+      user_id: parseInt(data?.user_id) || null,
+    },
+  });
+
+  cache.deleteCachedData(key);
+  return newBudget;
 };
 
 exports.getAllBudgetsOfAnUser = async (user_id = Number) => {
@@ -25,11 +33,10 @@ exports.getAllBudgetsOfAnUser = async (user_id = Number) => {
     if (cache.nodeCache.has(key)) return cache.getCachedData(key);
 
     let budgets = await prisma.budget.findMany({
-            where: { user_id: user_id },
-            include: { subEvents: true },
-            orderBy: { id: "asc" },
-        });;
-    
+        where: { user_id: user_id },
+        include: { subEvents: true },
+        orderBy: { id: "asc" },
+    });
 
     cache.setDataToCache(key, budgets);
     return budgets;
@@ -49,10 +56,15 @@ exports.getBudgetById = async (id) => {
 
 exports.updateBudget = async (id, data) => {
     const date = generateTimestamp();
+    const formattedDate = convertDateFormat(data?.end_date);
     const updatedBudget = await prisma.budget.update({
         where: { id },
         data: {
-            ...data,
+            title: data?.title,
+            total_amount: data?.total_amount,
+            remaining: data?.remaining,
+            type: data?.type,
+            end_date: formattedDate,
             updated_at: date,
         },
     });
@@ -90,6 +102,16 @@ exports.addSubEvent = async (budgetId, data) => {
 
     cache.nodeCache.flushAll();
     return sub;
+};
+
+exports.getAllSubBudgets = async (budget_id = Number) => {
+    console.log(budget_id)
+    const subBudgets = await prisma.subBudget.findMany({
+        where: { budget_id: budget_id },
+        orderBy: { id: "desc" },
+    });
+
+    return subBudgets;
 };
 
 exports.deleteSubEvent = async (subId) => {

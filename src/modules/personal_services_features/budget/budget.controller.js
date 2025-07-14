@@ -91,6 +91,23 @@ exports.addSubEvent = async (req, res, next) => {
     }
 };
 
+exports.getAllSubBudgets = async (req, res, next) => {
+    try {
+        const { id } = req?.params;
+
+        const subBudgets = await budgetService.getAllSubBudgets(
+            parseInt(id)
+        );
+        return res.status(200).json({
+            success: true,
+            total: subBudgets.length,
+            data: subBudgets,
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
 exports.deleteSubEvent = async (req, res, next) => {
     try {
         await budgetService.deleteSubEvent(parseInt(req.params.subId));

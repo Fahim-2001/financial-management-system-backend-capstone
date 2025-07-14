@@ -15,7 +15,7 @@ const findSmallestAvailableId = async (model = null) => {
         }
     }
 
-    return parseInt(currentId);
+    return parseInt(records?.length+1);
 };
 
 module.exports = { findSmallestAvailableId };
