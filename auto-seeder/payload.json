@@ -1,303 +1,242 @@
 [
   {
-    "title": "Grocery Shopping",
-    "amount": 1500.00,
-    "date": "2024-01-05",
-    "created_at": "2024-01-05 10:30:00",
-    "budget_id": 1
+    "title": "Dhaka Stock Portfolio",
+    "investment_type": "Stock",
+    "institution": "Dhaka Stock Exchange",
+    "initial_amount": 50000.00,
+    "current_value": 52000.00,
+    "start_date": "2025-01-15 09:00:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Diversified stock portfolio",
+    "user_id": 1
   },
   {
-    "title": "Weekly Supplies",
-    "amount": 1200.00,
-    "date": "2024-01-15",
-    "created_at": "2024-01-15 14:00:00",
-    "budget_id": 1
+    "title": "ICB Mutual Fund A",
+    "investment_type": "MutualFund",
+    "institution": "Investment Corporation of Bangladesh",
+    "initial_amount": 25000.00,
+    "current_value": 26000.00,
+    "start_date": "2025-02-01 10:00:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Long-term growth fund",
+    "user_id": 1
   },
   {
-    "title": "Bulk Purchase",
-    "amount": 1100.00,
-    "date": "2024-01-25",
-    "created_at": "2024-01-25 09:15:00",
-    "budget_id": 1
+    "title": "Sonali Bank FD",
+    "investment_type": "FixedDeposit",
+    "institution": "Sonali Bank",
+    "initial_amount": 100000.00,
+    "current_value": 102500.00,
+    "start_date": "2025-03-01 09:30:00",
+    "end_date": "2025-06-01 09:30:00",
+    "status": "Matured",
+    "notes": "6-month term deposit",
+    "user_id": 1
   },
   {
-    "title": "Flight Booking",
-    "amount": 5000.00,
-    "date": "2024-02-10",
-    "created_at": "2024-02-10 11:00:00",
-    "budget_id": 2
+    "title": "Grameenphone Bond",
+    "investment_type": "Bond",
+    "institution": "Grameenphone",
+    "initial_amount": 75000.00,
+    "current_value": 77000.00,
+    "start_date": "2025-01-10 11:00:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Corporate bond with 5% interest",
+    "user_id": 1
   },
   {
-    "title": "Hotel Stay",
-    "amount": 4000.00,
-    "date": "2024-02-15",
-    "created_at": "2024-02-15 13:30:00",
-    "budget_id": 2
+    "title": "Rupali Bank FD",
+    "investment_type": "FixedDeposit",
+    "institution": "Rupali Bank",
+    "initial_amount": 80000.00,
+    "current_value": 82000.00,
+    "start_date": "2025-04-01 09:00:00",
+    "end_date": "2025-07-01 09:00:00",
+    "status": "Active",
+    "notes": "3-month term deposit",
+    "user_id": 1
   },
   {
-    "title": "Travel Insurance",
-    "amount": 3000.00,
-    "date": "2024-02-20",
-    "created_at": "2024-02-20 10:45:00",
-    "budget_id": 2
+    "title": "BRAC Mutual Fund",
+    "investment_type": "MutualFund",
+    "institution": "BRAC Bank",
+    "initial_amount": 30000.00,
+    "current_value": 31000.00,
+    "start_date": "2025-02-15 10:30:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Balanced fund",
+    "user_id": 1
   },
   {
-    "title": "Rent Payment",
-    "amount": 6000.00,
-    "date": "2024-03-05",
-    "created_at": "2024-03-05 09:00:00",
-    "budget_id": 3
+    "title": "Dhaka Bank Bond",
+    "investment_type": "Bond",
+    "institution": "Dhaka Bank",
+    "initial_amount": 60000.00,
+    "current_value": 61500.00,
+    "start_date": "2025-03-10 09:15:00",
+    "end_date": "2025-06-10 09:15:00",
+    "status": "Matured",
+    "notes": "3-month bond",
+    "user_id": 1
   },
   {
-    "title": "Maintenance Fee",
-    "amount": 3000.00,
-    "date": "2024-03-15",
-    "created_at": "2024-03-15 14:20:00",
-    "budget_id": 3
+    "title": "Janata Bank FD",
+    "investment_type": "FixedDeposit",
+    "institution": "Janata Bank",
+    "initial_amount": 120000.00,
+    "current_value": 123600.00,
+    "start_date": "2025-02-01 09:00:00",
+    "end_date": "2025-05-01 09:00:00",
+    "status": "Matured",
+    "notes": "3-month high-interest FD",
+    "user_id": 1
   },
   {
-    "title": "Movie Night",
-    "amount": 1000.00,
-    "date": "2024-04-10",
-    "created_at": "2024-04-10 12:00:00",
-    "budget_id": 4
+    "title": "Square Pharma Stock",
+    "investment_type": "Stock",
+    "institution": "Dhaka Stock Exchange",
+    "initial_amount": 45000.00,
+    "current_value": 47000.00,
+    "start_date": "2025-04-15 10:00:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Pharma sector investment",
+    "user_id": 1
   },
   {
-    "title": "Concert Tickets",
-    "amount": 1500.00,
-    "date": "2024-04-20",
-    "created_at": "2024-04-20 15:30:00",
-    "budget_id": 4
+    "title": "bKash Savings Plan",
+    "investment_type": "FixedDeposit",
+    "institution": "bKash",
+    "initial_amount": 20000.00,
+    "current_value": 20500.00,
+    "start_date": "2025-05-01 09:30:00",
+    "end_date": "2025-07-01 09:30:00",
+    "status": "Active",
+    "notes": "Digital savings scheme",
+    "user_id": 1
   },
   {
-    "title": "Electricity Bill",
-    "amount": 1000.00,
-    "date": "2024-05-05",
-    "created_at": "2024-05-05 08:45:00",
-    "budget_id": 5
+    "title": "IFIC Mutual Fund",
+    "investment_type": "MutualFund",
+    "institution": "IFIC Bank",
+    "initial_amount": 35000.00,
+    "current_value": 36000.00,
+    "start_date": "2025-03-01 10:00:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Equity-focused fund",
+    "user_id": 1
   },
   {
-    "title": "Water Bill",
-    "amount": 800.00,
-    "date": "2024-05-15",
-    "created_at": "2024-05-15 11:00:00",
-    "budget_id": 5
+    "title": "City Bank Bond",
+    "investment_type": "Bond",
+    "institution": "City Bank",
+    "initial_amount": 90000.00,
+    "current_value": 92500.00,
+    "start_date": "2025-02-10 09:15:00",
+    "end_date": "2025-05-10 09:15:00",
+    "status": "Matured",
+    "notes": "3-month corporate bond",
+    "user_id": 1
   },
   {
-    "title": "Oil Change",
-    "amount": 2000.00,
-    "date": "2024-06-10",
-    "created_at": "2024-06-10 09:30:00",
-    "budget_id": 6
+    "title": "Robi Stock Investment",
+    "investment_type": "Stock",
+    "institution": "Dhaka Stock Exchange",
+    "initial_amount": 30000.00,
+    "current_value": 31000.00,
+    "start_date": "2025-05-15 10:30:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Telecom sector stock",
+    "user_id": 1
   },
   {
-    "title": "Tire Replacement",
-    "amount": 1500.00,
-    "date": "2024-06-20",
-    "created_at": "2024-06-20 14:15:00",
-    "budget_id": 6
+    "title": "Dutch-Bangla FD",
+    "investment_type": "FixedDeposit",
+    "institution": "Dutch-Bangla Bank",
+    "initial_amount": 70000.00,
+    "current_value": 71500.00,
+    "start_date": "2025-06-01 09:00:00",
+    "end_date": "2025-09-01 09:00:00",
+    "status": "Active",
+    "notes": "6-month term deposit",
+    "user_id": 1
   },
   {
-    "title": "Hotel Booking",
-    "amount": 5000.00,
-    "date": "2024-07-10",
-    "created_at": "2024-07-10 10:00:00",
-    "budget_id": 7
+    "title": "Prime Bank Mutual Fund",
+    "investment_type": "MutualFund",
+    "institution": "Prime Bank",
+    "initial_amount": 40000.00,
+    "current_value": 41000.00,
+    "start_date": "2025-04-01 10:00:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Growth-oriented fund",
+    "user_id": 1
   },
   {
-    "title": "Travel Food",
-    "amount": 3000.00,
-    "date": "2024-07-15",
-    "created_at": "2024-07-15 13:20:00",
-    "budget_id": 7
+    "title": "Mercantile Bank Bond",
+    "investment_type": "Bond",
+    "institution": "Mercantile Bank",
+    "initial_amount": 55000.00,
+    "current_value": 56500.00,
+    "start_date": "2025-05-01 09:15:00",
+    "end_date": "2025-07-01 09:15:00",
+    "status": "Active",
+    "notes": "2-month bond",
+    "user_id": 1
   },
   {
-    "title": "Course Fee",
-    "amount": 3000.00,
-    "date": "2024-08-05",
-    "created_at": "2024-08-05 09:15:00",
-    "budget_id": 8
+    "title": "Beximco Stock",
+    "investment_type": "Stock",
+    "institution": "Dhaka Stock Exchange",
+    "initial_amount": 60000.00,
+    "current_value": 62000.00,
+    "start_date": "2025-06-15 10:00:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Industrial sector stock",
+    "user_id": 1
   },
   {
-    "title": "Books",
-    "amount": 2000.00,
-    "date": "2024-08-15",
-    "created_at": "2024-08-15 11:30:00",
-    "budget_id": 8
+    "title": "Agrani Bank FD",
+    "investment_type": "FixedDeposit",
+    "institution": "Agrani Bank",
+    "initial_amount": 90000.00,
+    "current_value": 92500.00,
+    "start_date": "2025-03-15 09:30:00",
+    "end_date": "2025-06-15 09:30:00",
+    "status": "Matured",
+    "notes": "3-month high-yield FD",
+    "user_id": 1
   },
   {
-    "title": "Doctor Visit",
-    "amount": 2000.00,
-    "date": "2024-01-10",
-    "created_at": "2024-01-10 14:00:00",
-    "budget_id": 9
+    "title": "Trust Bank Mutual Fund",
+    "investment_type": "MutualFund",
+    "institution": "Trust Bank",
+    "initial_amount": 28000.00,
+    "current_value": 29000.00,
+    "start_date": "2025-05-01 10:30:00",
+    "end_date": null,
+    "status": "Active",
+    "notes": "Stable income fund",
+    "user_id": 1
   },
   {
-    "title": "Medicine",
-    "amount": 1500.00,
-    "date": "2024-02-20",
-    "created_at": "2024-02-20 10:30:00",
-    "budget_id": 9
-  },
-  {
-    "title": "Clothing",
-    "amount": 2000.00,
-    "date": "2024-04-10",
-    "created_at": "2024-04-10 12:15:00",
-    "budget_id": 10
-  },
-  {
-    "title": "Electronics",
-    "amount": 1500.00,
-    "date": "2024-05-20",
-    "created_at": "2024-05-20 15:00:00",
-    "budget_id": 10
-  },
-  {
-    "title": "Painting Supplies",
-    "amount": 3000.00,
-    "date": "2024-02-05",
-    "created_at": "2024-02-05 09:45:00",
-    "budget_id": 11
-  },
-  {
-    "title": "Furniture",
-    "amount": 5000.00,
-    "date": "2024-02-15",
-    "created_at": "2024-02-15 13:10:00",
-    "budget_id": 11
-  },
-  {
-    "title": "Vet Visit",
-    "amount": 800.00,
-    "date": "2024-03-10",
-    "created_at": "2024-03-10 11:00:00",
-    "budget_id": 12
-  },
-  {
-    "title": "Pet Food",
-    "amount": 600.00,
-    "date": "2024-03-20",
-    "created_at": "2024-03-20 14:30:00",
-    "budget_id": 12
-  },
-  {
-    "title": "Restaurant Dinner",
-    "amount": 1500.00,
-    "date": "2024-05-10",
-    "created_at": "2024-05-10 12:00:00",
-    "budget_id": 13
-  },
-  {
-    "title": "Takeout",
-    "amount": 1000.00,
-    "date": "2024-05-20",
-    "created_at": "2024-05-20 15:15:00",
-    "budget_id": 13
-  },
-  {
-    "title": "Gym Membership",
-    "amount": 600.00,
-    "date": "2024-06-05",
-    "created_at": "2024-06-05 09:30:00",
-    "budget_id": 14
-  },
-  {
-    "title": "Equipment",
-    "amount": 500.00,
-    "date": "2024-06-15",
-    "created_at": "2024-06-15 13:45:00",
-    "budget_id": 14
-  },
-  {
-    "title": "Family Outing",
-    "amount": 2500.00,
-    "date": "2024-07-05",
-    "created_at": "2024-07-05 10:00:00",
-    "budget_id": 15
-  },
-  {
-    "title": "Gifts",
-    "amount": 2000.00,
-    "date": "2024-07-20",
-    "created_at": "2024-07-20 14:20:00",
-    "budget_id": 15
-  },
-  {
-    "title": "Savings Deposit",
-    "amount": 1000.00,
-    "date": "2024-08-10",
-    "created_at": "2024-08-10 11:15:00",
-    "budget_id": 16
-  },
-  {
-    "title": "Emergency Fund",
-    "amount": 800.00,
-    "date": "2024-08-20",
-    "created_at": "2024-08-20 13:30:00",
-    "budget_id": 16
-  },
-  {
-    "title": "Stock Purchase",
-    "amount": 4000.00,
-    "date": "2024-01-15",
-    "created_at": "2024-01-15 09:00:00",
-    "budget_id": 17
-  },
-  {
-    "title": "Bond Investment",
-    "amount": 3000.00,
-    "date": "2024-03-20",
-    "created_at": "2024-03-20 14:45:00",
-    "budget_id": 17
-  },
-  {
-    "title": "Charity Donation",
-    "amount": 2000.00,
-    "date": "2024-05-15",
-    "created_at": "2024-05-15 10:30:00",
-    "budget_id": 18
-  },
-  {
-    "title": "Community Event",
-    "amount": 1500.00,
-    "date": "2024-07-20",
-    "created_at": "2024-07-20 12:00:00",
-    "budget_id": 18
-  },
-  {
-    "title": "Curtains",
-    "amount": 2000.00,
-    "date": "2024-04-05",
-    "created_at": "2024-04-05 11:00:00",
-    "budget_id": 19
-  },
-  {
-    "title": "Wall Art",
-    "amount": 1500.00,
-    "date": "2024-04-15",
-    "created_at": "2024-04-15 13:20:00",
-    "budget_id": 19
-  },
-  {
-    "title": "Laptop",
-    "amount": 5000.00,
-    "date": "2024-06-10",
-    "created_at": "2024-06-10 09:15:00",
-    "budget_id": 20
-  },
-  {
-    "title": "Mouse",
-    "amount": 800.00,
-    "date": "2024-07-15",
-    "created_at": "2024-07-15 14:00:00",
-    "budget_id": 20
-  },
-  {
-    "title": "Keyboard",
-    "amount": 700.00,
-    "date": "2024-08-05",
-    "created_at": "2024-08-05 10:30:00",
-    "budget_id": 20
+    "title": "Standard Bank Bond",
+    "investment_type": "Bond",
+    "institution": "Standard Bank",
+    "initial_amount": 65000.00,
+    "current_value": 66500.00,
+    "start_date": "2025-07-01 09:15:00",
+    "end_date": "2025-09-01 09:15:00",
+    "status": "Active",
+    "notes": "2-month bond issued recently",
+    "user_id": 1
   }
 ]
