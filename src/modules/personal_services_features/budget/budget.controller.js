@@ -15,10 +15,10 @@ exports.createBudget = async (req, res, next) => {
 
 exports.getAllBudgets = async (req, res, next) => {
     try {
-        const { user_id, type } = req?.query;
+        const { id } = req?.params;
 
         const budgets = await budgetService.getAllBudgetsOfAnUser(
-            parseInt(user_id), type
+            parseInt(id)
         );
         return res.status(200).json({
             success: true,
@@ -85,6 +85,23 @@ exports.addSubEvent = async (req, res, next) => {
             success: true,
             message: "Successfully entered a new entry",
             data: event,
+        });
+    } catch (err) {
+        next(err);
+    }
+};
+
+exports.getAllSubBudgets = async (req, res, next) => {
+    try {
+        const { id } = req?.params;
+
+        const subBudgets = await budgetService.getAllSubBudgets(
+            parseInt(id)
+        );
+        return res.status(200).json({
+            success: true,
+            total: subBudgets.length,
+            data: subBudgets,
         });
     } catch (err) {
         next(err);

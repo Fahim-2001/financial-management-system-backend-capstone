@@ -1,12 +1,12 @@
 const express = require("express");
+const ExpenseController = require("./expense.controller");
 const expensesRouter = express.Router();
-const expenseController = require("./expense.controller");
 
 // CRUD routes
-expensesRouter.post("/", expenseController.createExpense);
-expensesRouter.get("/", expenseController.getAllExpenses);
-expensesRouter.get("/:id", expenseController.getExpenseById);
-expensesRouter.put("/:id", expenseController.updateExpense);
-expensesRouter.delete("/:id", expenseController.deleteExpense);
+expensesRouter.post("/", ExpenseController.createExpense);
+expensesRouter.get("/user/:id", ExpenseController.getAllExpenses);
+expensesRouter.get("/:id", ExpenseController.getExpenseById);
+expensesRouter.put("/:id", ExpenseController.updateExpense);
+expensesRouter.delete("/:id", ExpenseController.deleteExpense);
 
 module.exports = expensesRouter;
