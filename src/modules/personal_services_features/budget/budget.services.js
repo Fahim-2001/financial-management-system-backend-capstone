@@ -16,7 +16,7 @@ exports.createBudget = async (data) => {
       total_amount: parseFloat(data?.total_amount) || 0,
       created_at: date,
       updated_at: date,
-      remaining: parseFloat(data?.total_amount) || 0,
+      remaining: parseFloat(data?.remaining) || 0,
       user_id: parseInt(data?.user_id) || null,
     },
   });

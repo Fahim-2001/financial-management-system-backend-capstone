@@ -27,7 +27,6 @@ class IncomeService {
             const userGivenDate = convertDateFormat(data.date);
             return await prisma.income.create({
                 data: {
-                    id: missingId,
                     amount: parseFloat(data?.amount),
                     source: data?.source,
                     category: data?.category,
