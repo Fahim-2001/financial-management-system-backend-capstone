@@ -43,7 +43,7 @@ model Organization {
 
 // Prisma Schema for Services
 model Service {
-  id           Int         @id @default(autoincrement())
+  id           Int         @id
   title        String
   price        Int
   type         String
@@ -63,7 +63,7 @@ enum SessionType {
 
 // Prisma Schema for Expenses
 model Expense {
-  id         Int     @id @default(autoincrement())
+  id         Int     @id
   title      String
   amount     Float
   category   String
