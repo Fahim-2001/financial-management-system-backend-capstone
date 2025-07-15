@@ -36,6 +36,36 @@ class LoanController {
         }
     }
 
+    static async updateLoan(req, res, next) {
+        try {
+            const { loan_id } = req.params;
+            const data = req.body;
+            const updatedLoan = await LoanService.updateLoan(parseInt(loan_id), data);
+            return res.status(200).json({
+                success: true,
+                message: "Loan updated successfully",
+                data: updatedLoan,
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
+    static async getLoanPaymentsByLoanId(req, res, next) {
+        try {
+            const { loan_id } = req.params;
+            console.log(loan_id)
+            const payments = await LoanService.getLoanPaymentsByLoanId(parseInt(loan_id));
+            return res.status(200).json({
+                success: true,
+                total: payments.length,
+                data: payments,
+            });
+        } catch (err) {
+            next(err);
+        }
+    }
+
     static async deleteLoan(req, res, next) {
         try {
             const { loan_id } = req.params;

@@ -7,9 +7,6 @@ exports.createBudget = async (data) => {
   const key = "all_budgets";
   const date = generateTimestamp();
 
-  // Log incoming data for debugging
-  console.log('Creating budget with data:', data);
-
   const newBudget = await prisma.budget.create({
     data: {
       title: data?.title || '',
@@ -35,7 +32,7 @@ exports.getAllBudgetsOfAnUser = async (user_id = Number) => {
     let budgets = await prisma.budget.findMany({
         where: { user_id: user_id },
         include: { subEvents: true },
-        orderBy: { id: "asc" },
+        orderBy: { id: "desc" },
     });
 
     cache.setDataToCache(key, budgets);

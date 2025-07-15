@@ -11,6 +11,12 @@ router.get("/user/:user_id", LoanController.getAllLoans);
 // Get a specific loan by ID
 router.get("/:loanId", LoanController.getLoanById);
 
+// Update a specific loan by ID
+router.put("/:loan_id", LoanController.updateLoan);
+
+// Get payments for a specific loan by loan_id
+router.get("/:loan_id/payment", LoanController.getLoanPaymentsByLoanId);
+
 // Delete a loan
 router.delete("/:loan_id", LoanController.deleteLoan);
 

@@ -12,7 +12,6 @@ const LOAN_CACHE_KEY = "loans_user_";
 class LoanService {
     static async createLoanInDB(data) {
         const date = generateTimestamp();
-        // const missingId = findSmallestAvailableId("loan");
         const yearsDifference = calculateYearsDifference(
             data?.start_date,
             data?.end_date
@@ -34,7 +33,6 @@ class LoanService {
 
         const loan = await prisma.loan.create({
             data: {
-                // id: missingId,
                 ...data,
                 principal_amount: parseFloat(data?.principal_amount),
                 total_paid: parseFloat(data?.total_paid),
@@ -81,6 +79,53 @@ class LoanService {
         });
     }
 
+    static async updateLoan(loan_id, data) {
+        const currentDateTime = generateTimestamp();
+        const loan = await prisma.loan.findUnique({ where: { id: loan_id } });
+
+        if (!loan) throw new Error("Loan not found");
+
+        const yearsDifference = calculateYearsDifference(data.start_date, data.end_date);
+        const total_payable =
+            yearsDifference < 1
+                ? parseFloat(data.principal_amount) +
+                  (parseFloat(data.principal_amount) * parseFloat(data.interest_rate)) / 100
+                : parseFloat(data.principal_amount) +
+                  ((parseFloat(data.principal_amount) * parseFloat(data.interest_rate)) / 100) *
+                      yearsDifference;
+        const due = (total_payable - parseFloat(loan.total_paid)).toFixed(3);
+
+        const updatedLoan = await prisma.loan.update({
+            where: { id: loan_id },
+            data: {
+                
+                principal_amount: parseFloat(data.principal_amount),
+                total_payable: total_payable,
+                due: parseFloat(due),
+                interest_rate: parseFloat(data.interest_rate),
+                number_of_payments: parseInt(data.number_of_payments),
+                remaining_payments: parseInt(data.remaining_payments),
+                start_date: data.start_date,
+                end_date: data.end_date,
+                payment_frequency: data.payment_frequency,
+                updated_at: currentDateTime,
+            },
+        });
+
+        const cacheKey = `${LOAN_CACHE_KEY}${loan.user_id}`;
+        cache.updateItemInCache(cacheKey, updatedLoan);
+
+        return updatedLoan;
+    }
+
+    static async getLoanPaymentsByLoanId(loan_id) {
+        const payments = await prisma.loanPayment.findMany({
+            where: { loan_id },
+            orderBy: { payment_date: "desc" },
+        });
+        return payments;
+    }
+
     static async makePayment(loan_id, data) {
         const loan = await prisma.loan.findUnique({
             where: { id: loan_id },
@@ -88,16 +133,12 @@ class LoanService {
 
         if (!loan) throw new Error("Loan not found");
 
-        // Interest Calculation
         const interest_paid = (
-            loan?.payment_frequency == "Monthly"
-                ? parseFloat(data.amount_paid) *
-                  (parseFloat(loan.interest_rate) / 100 / 12)
-                : loan?.payment_frequency == "BiWeekly"
-                ? parseFloat(data.amount_paid) *
-                  (parseFloat(loan.interest_rate) / 100 / 26)
-                : parseFloat(data.amount_paid) *
-                  (parseFloat(loan.interest_rate) / 100 / 52)
+            loan?.payment_frequency === "Monthly"
+                ? parseFloat(data.amount_paid) * (parseFloat(loan.interest_rate) / 100 / 12)
+                : loan?.payment_frequency === "BiWeekly"
+                ? parseFloat(data.amount_paid) * (parseFloat(loan.interest_rate) / 100 / 26)
+                : parseFloat(data.amount_paid) * (parseFloat(loan.interest_rate) / 100 / 52)
         ).toFixed(3);
 
         const principal_paid = (
@@ -115,7 +156,7 @@ class LoanService {
                 total_paid:
                     parseFloat(loan.total_paid) + parseFloat(data.amount_paid),
                 due: parseFloat(remainingBalance),
-                status: remainingBalance === 0 ? "Paid" : "Active",
+                status: remainingBalance === 0 ? "PaidOff" : "Active",
                 next_payment_date: calculateNextDueDate(
                     loan.next_payment_date,
                     loan.payment_frequency
@@ -145,7 +186,6 @@ class LoanService {
     }
 
     static async deleteLoan(loan_id) {
-        console.log(loan_id);
         const loan = await prisma.loan.findUnique({
             where: { id: loan_id },
         });
@@ -175,18 +215,17 @@ class LoanService {
         const loan = await prisma.loan.findUnique({ where: { id: loan_id } });
         if (!loan) throw new Error("Loan not found");
 
-        // Reverse the payment effect (e.g., subtract amount_paid from total_paid)
         const updatedTotalPaid = loan.total_paid - payment.amount_paid;
         const remainingBalance = calculateRemainingBalance(
             loan.principal_amount,
-            loan.total_paid - payment.amount_paid
+            updatedTotalPaid
         );
 
         const updatedLoan = await prisma.loan.update({
             where: { id: loan_id },
             data: {
                 total_paid: updatedTotalPaid,
-                current_balance: parseFloat(remainingBalance),
+                due: parseFloat(remainingBalance),
                 status: remainingBalance === 0 ? "PaidOff" : "Active",
                 updated_at: currentDateTime,
             },
